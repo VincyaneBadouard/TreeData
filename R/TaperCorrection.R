@@ -125,6 +125,10 @@ TaperCorrection <- function(
 
 
     } # end of the correction
+  }else{
+    Data[, HOMCor := DefaultHOM]
+    Data[, TaperCorDBH := Diameter]
+    Data[, DiameterCorrectionMeth := ""]
   }
 
   if(DetectOnly %in% FALSE){

@@ -265,7 +265,7 @@ DiameterCorrection <- function(
   Data <- Data[order(get(ID), Year)]
 
   # IDs vector --------------------------------------------------------------------------------------------------------
-  Ids <- as.vector(na.omit(unique(Data[, get(ID)]))) # Tree Ids
+  Ids <- as.vector(na.omit(unique(Data[!is.na(Year), get(ID)]))) # Tree Ids
 
   # Dataset with the rows without IDS ----------------------------------------------------------------------------------
   DataIDNa <- Data[is.na(get(ID))]
@@ -465,6 +465,9 @@ DiameterCorrectionByTree <- function(
   DetectOnly = FALSE
 ){
 
+  # print(unique(DataTree[, get(ID)])) # to debug
+
+
   #### Arguments check ####
   # DataTree
   if (!inherits(DataTree, c("data.table", "data.frame")))
@@ -491,7 +494,6 @@ DiameterCorrectionByTree <- function(
   # In data.table
   setDT(DataTree)
 
-  # print(unique(DataTree[, get(ID)])) # to debug
 
   # Arrange year in ascending order
   DataTree <- DataTree[order(Year)] # data.table::order

@@ -29,8 +29,8 @@ library(shiny)
 library(shinydashboard)
 library(shinyjs)
 library(shinyWidgets)
-
-# library(ggplot2)
+library(data.table)
+library(ggplot2)
 ```
 
 # Open the shiny app
@@ -42,7 +42,7 @@ shiny::runGitHub( "VincyaneBadouard/TreeData", subdir = "inst/app") # data.tree,
 
 **Load the example dataset stored in the package**
 ```{r}
-# data()
+data("TestData")
 ```
 
 # Metadata of the output columns of the TreeData package
@@ -76,65 +76,189 @@ level.
 **Recruitment**  
 - *CorrectedRecruit* (logical): TRUE: the row was added to represent the year when the stem was larger than the minimum diameter, but absent from the dataset. FALSE: original dataset row.  
 
-# All the functions of the package
+# All the correction functions of the package
+GeneralErrorsDetection()  
+BotanicalCorrection()  
+StatusCorrection()  
+TaperCorrection()  
+DiameterCorrection()  
+RecruitmentCorrection()  
+
+# The corrections illustration functions of the package
+StatusCorrectionPlot()  
+DiameterCorrectionPlot()  
+BotanicalCorrectionPlot()  
+
 # Arguments presentation
-# Harmonise and correct your data
-## Results summary
-# Only harmonization
 
 # Decomposed corrections
 
 ## General errors detection
 Detect errors
- - Remove **duplicated rows**
- - Check **missing value** in
+- Remove **duplicated rows**
+- Check **missing value** in
 X-YTreeUTM/PlotArea/Plot/Subplot/Year/TreeFieldNum/
 IdTree/IdStem/Diameter/POM/HOM/Family/Genus/Species/VernName
- - Check **missing value** (NA/0) in the measurement variables: "Diameter",
+- Check **missing value** (NA/0) in the measurement variables: "Diameter",
 "HOM", "TreeHeight", "StemHeight"
- - Check of the **unique association of the IdTree with plot, subplot**
+- Check of the **unique association of the IdTree with plot, subplot**
 **and TreeFieldNum** (at the site scale)
- - Check **duplicated IdTree/IdStem** in a census (at the site scale)
- - Check for trees **outside the subplot** (not implemented yet)
- - Check **invariant coordinates per IdTree/IdStem**
- - Check **fix Plot and Subplot number** (not implemented yet)
+- Check **duplicated IdTree/IdStem** in a census (at the site scale)
+- Check for trees **outside the subplot** (not implemented yet)
+- Check **invariant coordinates per IdTree/IdStem**
+- Check **fix Plot and Subplot number** (not implemented yet)
+
+```{r}
+Rslt <- GeneralErrorsDetection(TestData)
+
+# The detected errors
+unique(Rslt[Comment != "", Comment])
+
+Rslt[Comment != "", ]
+```
 
 ## Botanical identification correction
 
- - No special characters (typography)
- - No family name in the Genus and Species columns (the suffix "aceae" is
-     specific to the family name.
- - Correct spelling of botanical names (*Taxonstand or WorldFlora*)
- - Family & Scientific names match (*BIOMASS::getTaxonomy or WorldFlora*)
- - Update the scientific botanical names with the current phylogenetic
-     classification
- - Check **invariant botanical informations per IdTree** (1 IdTree = 1 family,
-     1 scientific and 1 vernacular name)
+- No special characters (typography)
+- No family name in the Genus and Species columns (the suffix "aceae" is
+specific to the family name.
+- Correct spelling of botanical names (*Taxonstand or WorldFlora*)
+- Family & Scientific names match (*BIOMASS::getTaxonomy or WorldFlora*)
+- Update the scientific botanical names with the current phylogenetic
+classification
+- Check **invariant botanical informations per IdTree** (1 IdTree = 1 family,
+1 scientific and 1 vernacular name)
+
+```{r}
+Rslt <- BotanicalCorrection(TestData, Source = "TPL", WFOData = NULL)
+```
 
 ## Life status
- - if UseSize argument chosen : if Diameter != NA -> Alive
- If (the value in bold is modified by the value given after the arrow):
- (the ">" gives the chronological order of the sequence)
- 
- - *Dead* > Alive -> NA
- - add rows for the forgotten censuses between 2 'Alive' if chosen
- - Alive > *Dead*/*NA* > Alive -> Alive
- - Alive > *NA* > Dead -> NA
- - Alive > *Dead* > NA -> Dead
+- if UseSize argument chosen : if Diameter != NA -> Alive
+If (the value in bold is modified by the value given after the arrow):
+(the ">" gives the chronological order of the sequence)
 
- - Alive > *NA* > *NA*:
-   if DeathConfirmation > unseens -> NA
-   if DeathConfirmation =< unseens -> Dead
-   
+- *Dead* > Alive -> NA
+- add rows for the forgotten censuses between 2 'Alive' if chosen
+- Alive > *Dead*/*NA* > Alive -> Alive
+- Alive > *NA* > Dead -> NA
+- Alive > *Dead* > NA -> Dead
+- Alive > *NA* > *NA*:
+if DeathConfirmation > unseens -> NA
+if DeathConfirmation =< unseens -> Dead
+
+```{r}
+Status_corr <- StatusCorrection(TestData,
+                                InvariantColumns = c("Site",
+                                                     "Genus_TreeDataCor",
+                                                     "Species_TreeDataCor",
+                                                     "Family_TreeDataCor",
+                                                     "ScientificName_TreeDataCor"),
+                                DeathConfirmation = 2,
+                                UseSize = FALSE,
+                                AddRowsForForgottenCensuses = TRUE,
+                                DetectOnly = FALSE,
+                                RemoveRBeforeAlive = TRUE,
+                                RemoveRAfterDeath = TRUE)
+
+Status_corr[LifeStatus!=LifeStatus_TreeDataCor]
+
+# pdf("LifeStatusCorrectionPlots.pdf", width = 25, height = 10)
+LifeStatusCorrectionPlot(Status_corr, OnlyCorrected = T, SeveralWindows = F)
+# dev.off()
+```
+
+
 ## Taper correction
 Transform the tree diameter measured at a given height into the diameter
 corresponding to the default measurement height (HOM), using an allometry.
 
+```{r}
+Data <- data.table(IdStem = "A",
+                   ScientificName = "Tree",
+                   Year = c(1998, 2008, 2016, 2017, 2018, 2019, 2021),
+                   IdCensus = factor(c(1998, 2008, 2016, 2017, 2018, 2019, 2021), ordered = TRUE),
+                   Diameter = c(19, 19, 21.4, 22.6, 23.1, 23.1, 23.6),
+                   HOM = c(1.30, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25))
+
+Rslt <- TaperCorrection(Data, DefaultHOM = 1.3,
+                        TaperParameter = function(DAB, HOM) 0.156 - 0.023 * log(DAB) - 0.021 * log(HOM),
+                        
+                        TaperFormula = function(DAB, HOM, TaperParameter, DefaultHOM) DAB / (exp(- TaperParameter*(HOM - DefaultHOM))))
+
+DiameterCorrectionPlot(Rslt, CorCol = "TaperDBH_TreeDataCor")
+```
+
+```{r}
+Rslt <- TaperCorrection(Status_corr, DefaultHOM = 1.3,
+                        TaperParameter = function(DAB, HOM) 0.156 - 0.023 * log(DAB) - 0.021 * log(HOM),
+                        
+                        TaperFormula = function(DAB, HOM, TaperParameter, DefaultHOM) DAB / (exp(- TaperParameter*(HOM - DefaultHOM))))
+
+DiameterCorrectionPlot(Rslt, CorCol = "TaperDBH_TreeDataCor", OnlyCorrected = TRUE, SeveralWindows = T)
+
+```
 
 ## Diameter correction
 
+```{r}
+Diam_corr <- DiameterCorrection(
+  Status_corr,
+  KeepMeas = c("MaxHOM", "MaxDate"),
+  
+  DefaultHOM = 1.3,
+  MaxDBH = 500,
+  PositiveGrowthThreshold = 5,
+  NegativeGrowthThreshold = -2,
+  
+  Pioneers = NULL,
+  PioneersGrowthThreshold = 7.5,
+  
+  WhatToCorrect = c("POM change", "punctual", "shift"),
+  CorrectionType = "individual",
+  
+  Digits = 1L,
+  
+  DBHCorForDeadTrees = FALSE,
+  
+  coef = 0.9,
+  
+  DetectOnly = FALSE)
+
+pdf("DiameterCorrectionPlots_TestData2.pdf", width = 25, height = 10)
+DiameterCorrectionPlot(Diam_corr, OnlyCorrected = TRUE, SeveralWindows = F)
+dev.off()
+```
 
 ## Recruitment
+
+```{r}
+Rslt <- RecruitmentCorrection(Diam_corr,
+                              KeepMeas = c("MaxHOM", "MaxDate"),
+                              MinDBH = 10,
+                              PositiveGrowthThreshold = 5,
+                              InvariantColumns = c("Site",
+                                                   "Genus_TreeDataCor",
+                                                   "Species_TreeDataCor",
+                                                   "Family_TreeDataCor",
+                                                   "ScientificName_TreeDataCor"),
+                              DetectOnly = FALSE)
+
+IdCorr <- Rslt[CorrectedRecruit %in%  TRUE, IdStem]
+TreesCorr <- Rslt[IdStem %in% IdCorr, .(IdStem,
+                                        Year,
+                                        Diameter,
+                                        Diameter_TreeDataCor,
+                                        CorrectedRecruit)]
+
+ggplot(TreesCorr) +
+  aes(x = Year, y = Diameter_TreeDataCor) +
+  geom_line(linewidth = 0.5, colour = "#112446") +
+  geom_point(shape = "circle", size = 1.5, mapping = aes(color = CorrectedRecruit)) +
+  theme_minimal() +
+  facet_wrap(vars(IdStem), scales = "free")
+```
+
 
 # Interesting other variables
 ## Mortality rate
@@ -145,11 +269,3 @@ corresponding to the default measurement height (HOM), using an allometry.
 ## Biomass
 ## Tree height
 ## Disturbance intensity
-# Illustrations
-## Diagnostic graphs
-
- - LifeStatusCorrectionPlot() : plot life status correction result
- - DiameterCorrectionPlot() : plot diameter correction result
-
-## Results graphs
-
