@@ -17,6 +17,7 @@ RequiredFormat
 Useful links:
 \itemize{
   \item \url{https://github.com/VincyaneBadouard/TreeData.git}
+  \item \url{https://vincyanebadouard.github.io/TreeData/}
   \item Report bugs at \url{https://github.com/VincyaneBadouard/TreeData/issues}
 }
 

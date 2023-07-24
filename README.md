@@ -1,6 +1,9 @@
 # TreeData
 
-[![R-CMD-check](https://github.com/VincyaneBadouard/TreeData/workflows/R-CMD-check/badge.svg)](https://github.com/VincyaneBadouard/TreeData/actions)
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/VincyaneBadouard/TreeData/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/VincyaneBadouard/TreeData/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 
 [![codecov](https://codecov.io/gh/VincyaneBadouard/TreeData/branch/master/graph/badge.svg?token=Z1IWWYKH7X)](https://codecov.io/gh/VincyaneBadouard/TreeData)
 

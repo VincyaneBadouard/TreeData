@@ -1,6 +1,4 @@
-URL: https://github.com/VincyaneBadouard/TreeData.git # final location of the site
-development:
-mode: auto
+url: https://vincyanebadouard.github.io/TreeData/
 template:
   bootstrap: 5
-  bootswatch: cerulean # appearance of your site
+

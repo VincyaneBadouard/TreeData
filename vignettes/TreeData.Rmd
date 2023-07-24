@@ -8,7 +8,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, echo = F, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>", echo = T, message = T, warning = F, cache = T
@@ -129,7 +129,7 @@ classification
 - Check **invariant botanical informations per IdTree** (1 IdTree = 1 family,
 1 scientific and 1 vernacular name)
 
-```{r}
+```{r, eval=F}
 Rslt <- BotanicalCorrection(TestData, Source = "TPL", WFOData = NULL)
 ```
 
@@ -150,10 +150,10 @@ if DeathConfirmation =< unseens -> Dead
 ```{r}
 Status_corr <- StatusCorrection(TestData,
                                 InvariantColumns = c("Site",
-                                                     "Genus_TreeDataCor",
-                                                     "Species_TreeDataCor",
-                                                     "Family_TreeDataCor",
-                                                     "ScientificName_TreeDataCor"),
+                                                     "Genus",
+                                                     "Species",
+                                                     "Family",
+                                                     "ScientificName"),
                                 DeathConfirmation = 2,
                                 UseSize = FALSE,
                                 AddRowsForForgottenCensuses = TRUE,
@@ -189,7 +189,7 @@ Rslt <- TaperCorrection(Data, DefaultHOM = 1.3,
 DiameterCorrectionPlot(Rslt, CorCol = "TaperDBH_TreeDataCor")
 ```
 
-```{r}
+```{r, eval = F}
 Rslt <- TaperCorrection(Status_corr, DefaultHOM = 1.3,
                         TaperParameter = function(DAB, HOM) 0.156 - 0.023 * log(DAB) - 0.021 * log(HOM),
                         
@@ -225,9 +225,12 @@ Diam_corr <- DiameterCorrection(
   
   DetectOnly = FALSE)
 
-pdf("DiameterCorrectionPlots_TestData2.pdf", width = 25, height = 10)
+```
+
+```{r, eval = F}
+# pdf("DiameterCorrectionPlots_TestData2.pdf", width = 25, height = 10)
 DiameterCorrectionPlot(Diam_corr, OnlyCorrected = TRUE, SeveralWindows = F)
-dev.off()
+# dev.off()
 ```
 
 ## Recruitment

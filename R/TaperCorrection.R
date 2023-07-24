@@ -68,7 +68,7 @@ TaperCorrection <- function(
     stop("Data must be a data.frame or data.table")
 
   # Check if the HOM column exists
-  if(!"HOM" %in% names(Data)){
+  if(!"HOM" %in% names(Data)| all(is.na(Data$HOM))){
     stop("You have chosen to make a 'taper' correction,
        but you do not have the necessary 'HOM' column in your dataset")
   }

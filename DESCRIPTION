@@ -21,7 +21,8 @@ Authors@R:
            email = "camille.piponiot@gmail.com")
            )
 Description: TreeData harmonises and corrects forest inventories.
-URL: https://github.com/VincyaneBadouard/TreeData.git
+URL: https://github.com/VincyaneBadouard/TreeData.git,
+    https://vincyanebadouard.github.io/TreeData/
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -44,7 +45,7 @@ Imports:
     units,
     htmlTable,
     data.table (>= 1.14.2),
-    shiny (>= 1.6.0),
+    shiny (>= 1.7.4),
     ggplot2 (>= 3.3.5),
     ggforce (>= 0.3.3),
     ggrepel (>= 0.9.1),
@@ -56,7 +57,7 @@ Imports:
     WorldFlora (>= 1.10), 
     BIOMASS (>= 2.1.7), 
     DT, 
-    shinydashboard,
+    shinydashboard (>= 0.7.2),
     shinycssloaders,
     shinyjs,
     shinyWidgets (>= 0.7.0)

@@ -5,3 +5,5 @@ shiny
 shinydashboard
 shinyjs
 shinyWidgets
+data.table
+ggplot2
