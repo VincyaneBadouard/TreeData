@@ -355,6 +355,8 @@ RecruitmentCorrectionByTree <- function(
   DBHCor <- DataTree[,Diameter_TreeDataCor]
   Year <- DataTree[,Year]
 
+  if(!"Comment" %in% names(Data)) Data[, Comment := ""]
+
   # Initialisation
   cresc <- rep(0, length(DBHCor) - 1) # (cresc[1] corresponds to the 2nd DBH)
 
@@ -380,14 +382,14 @@ RecruitmentCorrectionByTree <- function(
     # Growth criteria
     if(length(cresc) > 0){ # if there are a growth
       Growth <- cresc[1] # 1st growth value
-    }else{Growth <- PositiveGrowthThreshold} # if only 1 DBH value (no cresc)
+    }else{Growth <- 0} # if only 1 DBH value (no cresc)
 
     # Maybe here we should round up the Growth, or propose a limit.
 
     # Detection
     #### If the 1st DBH is larger than it would have been if at the previous census
     # it was at the minimum DBH
-    if(FirstDBH > (MinDBH + (RecruitYear - PrevCens) * Growth)){ # ma proposition
+    if((FirstDBH > (MinDBH + (RecruitYear - PrevCens) * Growth)) & (Growth > 0)){ # ma proposition
       # and Growth > 0 je pense à ajouter
 
       DataTree <- GenerateComment(DataTree,
