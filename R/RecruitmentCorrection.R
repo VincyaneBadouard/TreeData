@@ -355,7 +355,7 @@ RecruitmentCorrectionByTree <- function(
   DBHCor <- DataTree[,Diameter_TreeDataCor]
   Year <- DataTree[,Year]
 
-  if(!"Comment" %in% names(Data)) Data[, Comment := ""]
+  if(!"Comment" %in% names(DataTree)) Data[, Comment := ""]
 
   # Initialisation
   cresc <- rep(0, length(DBHCor) - 1) # (cresc[1] corresponds to the 2nd DBH)
