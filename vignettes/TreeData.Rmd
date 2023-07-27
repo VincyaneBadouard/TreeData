@@ -163,6 +163,9 @@ Status_corr <- StatusCorrection(TestData,
 
 Status_corr[LifeStatus!=LifeStatus_TreeDataCor]
 
+Status_corr[IdStem == "101362_1_auto", .(IdStem, LifeStatus, LifeStatus_TreeDataCor, Diameter, Year, Comment)]
+# Les années (Year) sont rangées par ordre croissant avant correction donc les NA se retrouvent à la fin. Le NA est entre deux vivants (TRUE) donc corrigé TRUE. La dernière ligne n'apparait pas sur le graphique car Year = NA donc pas plotable.
+
 # pdf("LifeStatusCorrectionPlots.pdf", width = 25, height = 10)
 LifeStatusCorrectionPlot(Status_corr, OnlyCorrected = T, SeveralWindows = F)
 # dev.off()

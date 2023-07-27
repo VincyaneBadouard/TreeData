@@ -157,6 +157,7 @@ RecruitmentCorrection <- function(
   }
 
   # Order IDs and times in ascending order ----------------------------------------------------------------------------
+  Data <- Data[, Year := as.numeric(Year)]
   Data <- Data[order(get(ID), Year)]
 
   # IDs vector --------------------------------------------------------------------------------------------------------
@@ -387,6 +388,7 @@ RecruitmentCorrectionByTree <- function(
     #### If the 1st DBH is larger than it would have been if at the previous census
     # it was at the minimum DBH
     if(FirstDBH > (MinDBH + (RecruitYear - PrevCens) * Growth)){ # ma proposition
+      # and Growth > 0 je pense à ajouter
 
       DataTree <- GenerateComment(DataTree,
                                   condition = DataTree[, Year]  %in% RecruitYear,

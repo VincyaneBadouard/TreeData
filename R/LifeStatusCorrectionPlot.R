@@ -73,6 +73,7 @@ LifeStatusCorrectionPlot <- function(
   Data[is.na(LifeStatus), LifeStatus := "NA"]
 
   # Order IDs and times in ascending order ----------------------------------------------------------------------------
+  Data <- Data[, Year := as.numeric(Year)]
   Data <- Data[order(get(ID), Year)]
 
   if(OnlyCorrected == TRUE){

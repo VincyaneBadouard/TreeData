@@ -124,31 +124,31 @@
 #' DiameterCorrectionPlot(Rslt, OnlyCorrected = TRUE)
 #'
 DiameterCorrection <- function(
-  Data,
+    Data,
 
-  KeepMeas = c("MaxHOM", "MaxDate"),
+    KeepMeas = c("MaxHOM", "MaxDate"),
 
-  DefaultHOM = 1.3,
-  MaxDBH = 500,
-  PositiveGrowthThreshold = 5,
-  NegativeGrowthThreshold = -2,
+    DefaultHOM = 1.3,
+    MaxDBH = 500,
+    PositiveGrowthThreshold = 5,
+    NegativeGrowthThreshold = -2,
 
-  Pioneers = NULL,
-  PioneersGrowthThreshold = 7.5,
+    Pioneers = NULL,
+    PioneersGrowthThreshold = 7.5,
 
-  WhatToCorrect = c("POM change", "punctual", "shift"),
-  CorrectionType = c("individual", "phylogenetic hierarchical"),
+    WhatToCorrect = c("POM change", "punctual", "shift"),
+    CorrectionType = c("individual", "phylogenetic hierarchical"),
 
-  DBHRange = 10,
-  MinIndividualNbr = 5,
-  OtherCrit = NULL,
-  Digits = 1L,
+    DBHRange = 10,
+    MinIndividualNbr = 5,
+    OtherCrit = NULL,
+    Digits = 1L,
 
-  DBHCorForDeadTrees = TRUE,
+    DBHCorForDeadTrees = TRUE,
 
-  coef = 0.9,
+    coef = 0.9,
 
-  DetectOnly = FALSE
+    DetectOnly = FALSE
 ){
 
   #### Arguments check ####
@@ -262,6 +262,7 @@ DiameterCorrection <- function(
   #### Function ####
 
   # Order IDs and times in ascending order ----------------------------------------------------------------------------
+  Data <- Data[, Year := as.numeric(Year)]
   Data <- Data[order(get(ID), Year)]
 
   # IDs vector --------------------------------------------------------------------------------------------------------
@@ -326,7 +327,8 @@ DiameterCorrection <- function(
   if(DetectOnly %in% FALSE){
     # Rename correction columns
     setnames(Data, c("DBHCor", "POMCor", "HOMCor"),
-             c("Diameter_TreeDataCor", "POM_TreeDataCor", "HOM_TreeDataCor"))
+             c("Diameter_TreeDataCor", "POM_TreeDataCor", "HOM_TreeDataCor"),
+             skip_absent = TRUE)
   }
 
 
@@ -441,28 +443,28 @@ DiameterCorrection <- function(
 #' DiameterCorrectionPlot(Rslt, CorCol = "DBHCor")
 #'
 DiameterCorrectionByTree <- function(
-  DataTree,
-  Data,
+    DataTree,
+    Data,
 
-  DefaultHOM = 1.3,
-  MaxDBH = 500,
-  PositiveGrowthThreshold = 5,
-  NegativeGrowthThreshold = -2,
+    DefaultHOM = 1.3,
+    MaxDBH = 500,
+    PositiveGrowthThreshold = 5,
+    NegativeGrowthThreshold = -2,
 
-  Pioneers = NULL,
-  PioneersGrowthThreshold = 7.5,
+    Pioneers = NULL,
+    PioneersGrowthThreshold = 7.5,
 
-  WhatToCorrect = c("POM change", "punctual", "shift"),
-  CorrectionType = "individual",
+    WhatToCorrect = c("POM change", "punctual", "shift"),
+    CorrectionType = "individual",
 
-  DBHRange = 10,
-  MinIndividualNbr = 5,
-  OtherCrit = NULL,
-  Digits = 1L,
+    DBHRange = 10,
+    MinIndividualNbr = 5,
+    OtherCrit = NULL,
+    Digits = 1L,
 
-  coef = 0.9,
+    coef = 0.9,
 
-  DetectOnly = FALSE
+    DetectOnly = FALSE
 ){
 
   # print(unique(DataTree[, get(ID)])) # to debug

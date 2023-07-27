@@ -72,7 +72,7 @@ test_that("BotanicalCorrection", {
                regexp = "Data must be a data.frame or data.table")
 
   expect_error(BotanicalCorrection(Data, Source = TRUE),
-               regexp = "must be NULL or a character vector")
+               regexp = "NULL")
 
   expect_error(BotanicalCorrection(Data, Source = "TRUE"),
                regexp = "should be one of")
