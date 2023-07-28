@@ -25,17 +25,17 @@
 #' @param DetectOnly TRUE: Only detect errors, FALSE: detect and correct errors
 #'   (logical)
 #'
-#' @details If the size of the tree has never changed, or if there is only one
-#'   value the same value is kept for the added forgotten recruits. If the
-#'   Diameter has not been corrected ('Diameter_TreeDataCor' column does not
-#'   exist), the function will create it for the forgotten recruits. It is
-#'   strongly recommended to correct the Diameter before correcting the recruits
-#'
 #' @return  Add rows for forgotten recruits with them estimated DBH in the
 #'   'Diameter_TreeDataCor' column, create a 'CorrectedRecruit' col (logical)
 #'   and fill the 'Comment' column : "This DBH is/was the 1st recorded for this
 #'   tree, according to its annual growth and the census done for this plot, it
 #'   should have been recruited earlier according to your protocol (MinDBH)."
+#'
+#' @details If the size of the tree has never changed, or if there is only one
+#'   value, no recruits are added. If the Diameter has not been corrected
+#'   ('Diameter_TreeDataCor' column does not exist), the function will create it
+#'   for the forgotten recruits. It is strongly recommended to correct the
+#'   Diameter before correcting the recruits
 #'
 #' @importFrom data.table data.table rbindlist
 #' @importFrom stats na.omit lm

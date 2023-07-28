@@ -54,10 +54,10 @@ RecruitmentCorrection
 }
 \details{
 If the size of the tree has never changed, or if there is only one
-value the same value is kept for the added forgotten recruits. If the
-Diameter has not been corrected ('Diameter_TreeDataCor' column does not
-exist), the function will create it for the forgotten recruits. It is
-strongly recommended to correct the Diameter before correcting the recruits
+value, no recruits are added. If the Diameter has not been corrected
+('Diameter_TreeDataCor' column does not exist), the function will create it
+for the forgotten recruits. It is strongly recommended to correct the
+Diameter before correcting the recruits
 }
 \examples{
 library(data.table)
