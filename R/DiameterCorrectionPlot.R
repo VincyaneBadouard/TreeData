@@ -132,7 +132,8 @@ DiameterCorrectionPlot <- function(
 
             # Corrected
             geom_line(data = subset(DataCor, !is.na(get(CorCol))),
-                      aes(y = get(CorCol), color = ifelse(Diameter != get(CorCol), 'Corrected', 'Conserved'))) +
+                      aes(y = get(CorCol),
+                          color = ifelse(Diameter != get(CorCol), 'Corrected', 'Conserved'))) +
             geom_point(data = subset(DataCor, !is.na(get(CorCol))),
                        aes(y = get(CorCol),
                            color = ifelse(Diameter != get(CorCol) | is.na(Diameter), 'Corrected', 'Conserved')),
@@ -147,11 +148,11 @@ DiameterCorrectionPlot <- function(
                                      point.size = 10, size = 3) +
 
             # Colours
-            scale_colour_manual(name = "Status", values = c("Conserved" = "black",
+            scale_colour_manual(name = "Status", values = c("Initial" = "red",
+                                                            "Corrected" = "forestgreen",
+                                                            "Conserved" = "black",
                                                             {if(nrow(subset(DataCor, !is.na(Diameter) & is.na(get(CorCol)))) > 0)
                                                               "Duplicated measurement" = "grey" },
-                                                            "Initial" = "red",
-                                                            "Corrected" = "forestgreen",
                                                             "Methode" = "purple",
                                                             "HOM" = "blue")) +
             theme_minimal() +

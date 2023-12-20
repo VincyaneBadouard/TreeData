@@ -3,6 +3,7 @@ test_that("BotanicalCorrection", {
   # options(warn = 2) # trace warning
 
   library(data.table)
+  library(dplyr)
 
   # WFO Dataset -----------------------------------------------------------------------------------------------------------
   # load("D:/VSC TmFO/Data/WFO_Backbone.rda")
