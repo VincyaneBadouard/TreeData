@@ -1,4 +1,4 @@
-#' Check Duplicated Stem ID
+#' Detect Duplicated Stem ID
 #'
 #' @param Data Dataset (data.frame or data.table)
 #'
@@ -13,10 +13,10 @@
 #' library(data.table)
 #' data("TestData")
 #'
-#' Rslt <- CheckDuplicatedStemID(TestData)
+#' Rslt <- DetectDuplicatedStemID(TestData)
 #'
 #'
-CheckDuplicatedStemID <- function(
+DetectDuplicatedStemID <- function(
   Data
 ){
 

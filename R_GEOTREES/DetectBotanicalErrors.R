@@ -1,4 +1,4 @@
-#' Flag botanical errors
+#' Detect botanical errors
 #'
 #' @param Data Dataset (data.frame or data.table)
 #'   The dataset must contain the columns:
@@ -28,9 +28,9 @@
 #' data(TestData)
 #'
 #'# With The Plant List:
-#' Rslt <- FlagBotanicalErrors(TestData)
+#' Rslt <- DetectBotanicalErrors(TestData)
 #'
-BotanicalCorrection <- function(
+DetectBotanicalErrors <- function(
   Data
 ){
 

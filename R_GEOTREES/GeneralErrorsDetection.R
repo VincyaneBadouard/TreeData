@@ -2,6 +2,14 @@
 #'
 #' @param Data Dataset (data.frame or data.table)
 #'
+#' @param Vars Variables to check for missing data (character)
+#' (Default = c("Plot", "Subplot", "Year", "TreeFieldNum", "IdTree",
+#' "IdStem", "Diameter", "POM", "HOM", "TreeHeight", "StemHeight","XTreeUTM",
+#'  "YTreeUTM", "Family", "Genus", "Species", "VernName"))
+#'
+#' @param MeasVars Measurement variables to check for missing data or 0
+#'  (character) (Default = c("Diameter", "HOM", "TreeHeight", "StemHeight"))
+#'
 #' @details Detect errors
 #'   - Remove **duplicated rows**
 #'   - Check **missing value** in
@@ -32,7 +40,11 @@
 #' Rslt <- GeneralErrorsDetection(TestData)
 #'
 GeneralErrorsDetection <- function(
-    Data
+    Data,
+    Vars = c("Plot", "Subplot", "Year", "TreeFieldNum", "IdTree", "IdStem",
+             "Diameter", "POM", "HOM", "TreeHeight", "StemHeight",
+             "XTreeUTM", "YTreeUTM", "Family", "Genus", "Species", "VernName"),
+    MeasVars = c("Diameter", "HOM", "TreeHeight", "StemHeight")
 ){
 
   #### Arguments check ####
@@ -63,24 +75,27 @@ GeneralErrorsDetection <- function(
   # In data.table
   setDT(Data)
 
-  # Check duplicate rows ------------------------------------------------------------------------------------
+  # Check duplicate rows -------------------------------------------------------
   # if there are duplicate rows, delete them
   Data <- DetectDuplicatedRows(Data)
 
-  # Missing values ----------------------------------------------------------------------------------------------------
-  Data <- CheckMissingValues(Data)
+  # Missing values -------------------------------------------------------------
+  Data <- DetectMissingValues(Data, Vars, MeasVars)
 
   # Check of the unique association of the IdTree/IdStem with Plot-Subplot-TreeFieldNum, at the site scale -------------------
-  Data <- CheckUniqueTreeIDAssociation(Data)
+  Data <- DetectDiffTreeIDAssociation(Data)
 
-  # Check duplicated IdTree/IdStem in a census ------------------------------------------------------------------------
-  Data <- CheckDuplicatedStemID(Data)
+  # Check duplicated IdTree/IdStem in a census ---------------------------------
+  Data <- DetectDuplicatedStemID(Data)
 
-  # Check for trees outside the subplot (TODO) ---------------------------------------------------------------------
-  Data <- CheckTreesOut(Data)
+  # Check the stem nbr coherence -----------------------------------------------
+  Data <- DetectStemNbrIncoherence(Data)
 
-  # Check invariant coordinates per IdTree/IdStem ---------------------------------------------------------------------
-  Data <- CheckStemInvariantCoord(Data)
+  # Check for trees outside the subplot (TODO) ---------------------------------
+  Data <- DetectTreesOut(Data)
+
+  # Check invariant coordinates per IdTree/IdStem ------------------------------
+  Data <- DetectStemVariantCoord(Data)
 
   # Check fix Plot and Subplot number across censuses (TODO, Eliot has) --------------------------------------------------------------
   # alerte quand le nombre de sous-parcelles/parcelles varie selon les années

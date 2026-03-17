@@ -1,4 +1,4 @@
-#' Check Unique Tree ID Association
+#' Detect Different Tree ID Association
 #'
 #' @param Data Dataset (data.frame or data.table)
 #'
@@ -16,9 +16,9 @@
 #' library(data.table)
 #' data("TestData")
 #'
-#' Rslt <- CheckUniqueTreeIDAssociation(TestData)
+#' Rslt <- DetectDiffTreeIDAssociation(TestData)
 #'
-CheckUniqueTreeIDAssociation <- function(
+DetectDiffTreeIDAssociation <- function(
   Data
 ){
 

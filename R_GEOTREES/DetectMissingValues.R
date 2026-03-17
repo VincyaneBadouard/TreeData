@@ -1,6 +1,14 @@
-#' Check Missing Values
+#' Detect Missing Values
 #'
 #' @param Data Dataset (data.frame or data.table)
+#'
+#' @param Vars Variables to check for missing data (character)
+#' (Default = c("Plot", "Subplot", "Year", "TreeFieldNum", "IdTree",
+#' "IdStem", "Diameter", "POM", "HOM", "TreeHeight", "StemHeight","XTreeUTM",
+#'  "YTreeUTM", "Family", "Genus", "Species", "VernName"))
+#'
+#' @param MeasVars Measurement variables to check for missing data or 0
+#'  (character) (Default = c("Diameter", "HOM", "TreeHeight", "StemHeight"))
 #'
 #' @details
 #'   - Check **missing value** in
@@ -19,10 +27,14 @@
 #' library(data.table)
 #' data("TestData")
 #'
-#' Rslt <- CheckMissingValues(TestData)
+#' Rslt <- DetectMissingValues(TestData)
 #'
-CheckMissingValues <- function(
-  Data
+DetectMissingValues <- function(
+  Data,
+  Vars = c("Plot", "Subplot", "Year", "TreeFieldNum", "IdTree", "IdStem",
+            "Diameter", "POM", "HOM", "TreeHeight", "StemHeight",
+            "XTreeUTM", "YTreeUTM", "Family", "Genus", "Species", "VernName"),
+  MeasVars = c("Diameter", "HOM", "TreeHeight", "StemHeight")
 ){
 
   #### Arguments check ####
@@ -41,9 +53,9 @@ CheckMissingValues <- function(
 
   # Check bota (?) : Family/Genus/Species/ScientificName/VernName
 
-    Vars <- c("Plot", "Subplot", "Year", "TreeFieldNum", "IdTree", "IdStem",
-            "Diameter", "POM", "HOM", "TreeHeight", "StemHeight",
-            "XTreeUTM", "YTreeUTM", "Family", "Genus", "Species", "VernName")
+    # Vars <- c("Plot", "Subplot", "Year", "TreeFieldNum", "IdTree", "IdStem",
+    #         "Diameter", "POM", "HOM", "TreeHeight", "StemHeight",
+    #         "XTreeUTM", "YTreeUTM", "Family", "Genus", "Species", "VernName")
 
   for (v in 1:length(Vars)) {
 
@@ -65,16 +77,16 @@ CheckMissingValues <- function(
 
   # Measurement variables = 0 -----------------------------------------------------------------------------------------
 
-  Vars <- c("Diameter", "HOM", "TreeHeight", "StemHeight")
+  # MeasVars <- c("Diameter", "HOM", "TreeHeight", "StemHeight")
 
-  for (v in 1:length(Vars)) {
-    if(Vars[v] %in% names(Data)){ # If the column exists
+  for (v in 1:length(MeasVars)) {
+    if(MeasVars[v] %in% names(Data)){ # If the column exists
 
       Data <- GenerateComment(Data,
-                              condition = Data[,get(Vars[v])] == 0,
-                              comment = paste0(Vars[v]," cannot be 0"))
+                              condition = Data[,get(MeasVars[v])] == 0,
+                              comment = paste0(MeasVars[v]," cannot be 0"))
 
-      # warning(paste0(Vars[v]," cannot be 0"))
+      # warning(paste0(MeasVars[v]," cannot be 0"))
     }
   }
 

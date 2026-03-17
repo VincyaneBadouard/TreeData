@@ -1,4 +1,4 @@
-#' Check Stem Invariant Coordinates
+#' Detect Stem Variant Coordinates
 #'
 #' @param Data Dataset (data.frame or data.table)
 #'
@@ -15,9 +15,9 @@
 #' library(data.table)
 #' data("TestData")
 #'
-#' Rslt <- CheckStemInvariantCoord(TestData)
+#' Rslt <- DetectStemVariantCoord(TestData)
 #'
-CheckStemInvariantCoord <- function(
+DetectStemVariantCoord <- function(
   Data
 ){
 
