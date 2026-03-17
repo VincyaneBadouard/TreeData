@@ -26,10 +26,10 @@ test_that("RecruitmentCorrection", {
   expect_error(RecruitmentCorrection(TestData,
                                      DetectOnly = "no"),
                regexp = "The 'DetectOnly' argument
-         of the 'RecruitmentCorrection' function must be logicals")
+         of the 'RecruitmentCorrection' function must be logical")
 
   expect_error(RecruitmentCorrection(NoDBHData),
-               regexp = "column does't exist in the dataset.")
+               regexp = "column doesn't exist in the dataset.")
 
 
   expect_error(RecruitmentCorrection(TestData, InvariantColumns = "a"),

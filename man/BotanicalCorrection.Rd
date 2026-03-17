@@ -58,7 +58,7 @@ Botanical Correction
 \item No special characters (typography)
 \item No family name in the Genus and Species columns (the suffix "aceae" is
 specific to the family name.
-\item Correct spelling of botanical names (\emph{Taxonstand or WorldFlora})
+\item Correct spelling of botanical names (\emph{WorldFlora})
 \item Family & Scientific names match (\emph{BIOMASS::getTaxonomy or WorldFlora})
 \item Update the scientific botanical names with the current phylogenetic
 classification

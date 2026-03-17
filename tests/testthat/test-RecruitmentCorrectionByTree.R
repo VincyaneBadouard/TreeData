@@ -39,12 +39,12 @@ test_that("RecruitmentCorrectionByTreeByTree", {
   expect_error(RecruitmentCorrectionByTree(TestData, PlotCensuses = 2001,
                                            DetectOnly = "no"),
                regexp = "The 'DetectOnly' argument
-         of the 'RecruitmentCorrectionByTree' function must be logicals")
+         of the 'RecruitmentCorrectionByTree' function must be logical")
 
   expect_error(RecruitmentCorrectionByTree(NoDBHData, PlotCensuses = 2001),
-               regexp = "column does't exist in the dataset.")
+               regexp = "column doesn't exist in the dataset.")
   expect_warning(RecruitmentCorrectionByTree(NoDBHCorData, InvariantColumns = "Site", PlotCensuses = 2001),
-                 regexp = "column does't exist in the dataset.")
+                 regexp = "column doesn't exist in the dataset.")
 
   expect_error(RecruitmentCorrectionByTree(TwoInd, PlotCensuses = 2001),
                regexp = "DataTree must correspond to only 1 same tree/stem so 1 same")

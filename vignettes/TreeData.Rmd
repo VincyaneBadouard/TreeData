@@ -122,7 +122,7 @@ Rslt[Comment != "", ]
 - No special characters (typography)
 - No family name in the Genus and Species columns (the suffix "aceae" is
 specific to the family name.
-- Correct spelling of botanical names (*Taxonstand or WorldFlora*)
+- Correct spelling of botanical names (*WorldFlora*)
 - Family & Scientific names match (*BIOMASS::getTaxonomy or WorldFlora*)
 - Update the scientific botanical names with the current phylogenetic
 classification
@@ -130,7 +130,7 @@ classification
 1 scientific and 1 vernacular name)
 
 ```{r, eval=F}
-Rslt <- BotanicalCorrection(TestData, Source = "TPL", WFOData = NULL)
+# Rslt <- BotanicalCorrection(TestData, Source = "TPL", WFOData = NULL)
 ```
 
 ## Life status

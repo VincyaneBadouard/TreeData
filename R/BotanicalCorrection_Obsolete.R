@@ -11,8 +11,6 @@
 #'
 #'
 #'@param Source (character) To correct and standardise, you can choose between:
-#'  - "TPL": *The Plant List* (http://www.theplantlist.org/) (faster but based
-#'           on the 2013 taxonomy)
 #'  - "WFO": *World Flora Online* (http://www.worldfloraonline.org/) (long time
 #'           but based on the 2022 taxonomy)
 #'  - NULL: if only error detection (DetectOnly = TRUE)
@@ -38,17 +36,17 @@
 #'       `IdTree` level.
 #'
 #'@details
-#' - No special characters (typography)
-#' - No family name in the Genus and Species columns (the suffix "aceae" is
+#' - Check for special characters (typography)
+#' - Check for family name in the Genus and Species columns (the suffix "aceae" is
 #'     specific to the family name.
-#' - Correct spelling of botanical names (*Taxonstand or WorldFlora*)
+#' - Check if the family name does not end in 'aceae'.
+#' - Correct spelling of botanical names (*WorldFlora*)
 #' - Family & Scientific names match (*BIOMASS::getTaxonomy or WorldFlora*)
 #' - Update the scientific botanical names with the current phylogenetic
 #'     classification
 #' - Check **invariant botanical informations per IdTree** (1 IdTree = 1 family,
 #'     1 scientific and 1 vernacular name)
 #'
-#'@importFrom Taxonstand TPL
 #'@importFrom BIOMASS getTaxonomy
 #'@importFrom WorldFlora WFO.match
 #'@importFrom stats na.omit
@@ -60,24 +58,6 @@
 #' library(data.table)
 #' data(TestData)
 #'
-#'# With The Plant List:
-#' Rslt <- BotanicalCorrection(TestData, Source = "TPL")
-#'
-#' ScfcCor <- unique(Rslt[ScientificNameCor != ScientificName,
-#'                 list(ScientificName, ScientificNameCor,
-#'                 Family, FamilyCor, FamilyCorSource,
-#'                 Genus, GenusCor,
-#'                 Species, SpeciesCor, Subspecies,
-#'                 BotanicalCorrectionSource, Comment)
-#'                 ])
-#'
-#' FamCor <- unique(Rslt[FamilyCor != Family,
-#'                 list(ScientificName, ScientificNameCor,
-#'                 Family, FamilyCor, FamilyCorSource,
-#'                 Genus, GenusCor,
-#'                 Species, SpeciesCor, Subspecies,
-#'                 BotanicalCorrectionSource, Comment)
-#'                 ])
 #'
 #'# With World Flora Online:
 #' WFO_Backbone <- file.choose()
@@ -115,13 +95,18 @@ BotanicalCorrection <- function(
     stop("Data must be a data.frame or data.table")
 
   # Source
-  Source <- match.arg(Source, choices = c("TPL", "WFO", NULL))
+  if(!is.null(Source)){
+  if(Source != "WFO")
+    stop("Source argument should be one of c('WFO', NULL)")
+    }
 
   # WFOData
+  if(!is.null(Source)){
   if(Source == "WFO" & is.null(WFOData))
     stop("You must provide the 'WFOData' argument,
           a database as a static copy of the World Flora Online (WFO) Taxonomic Backbone,
           when you choose Source = 'WFO'.")
+  }
 
 
   # DetectOnly (logical)
@@ -193,6 +178,10 @@ BotanicalCorrection <- function(
                           comment = "Names ending in 'aceae' cannot be genus or species names")
 
   Data <- GenerateComment(Data,
+                          condition = !grepl("aceae", Data$Family) & !is.na(Data$Family) & !grepl("Indet", Data$Family),
+                          comment = "The family name does not end in 'aceae'")
+
+  Data <- GenerateComment(Data,
                           condition = grepl('[[:punct:]]', Data$Genus), # TRUE if there are any special character
                           comment = "Special characters in the 'Genus'")
 
@@ -202,62 +191,62 @@ BotanicalCorrection <- function(
 
   if(DetectOnly %in% FALSE){
 
-    if(Source == "TPL"){
-
-      # Correct spelling error & standardise botanical names ----------------------------------------------------------------
-
-      # TPL correction with Taxonstand package
-      TPLCor <- suppressWarnings(Taxonstand::TPL(splist = unique(Data$ScientificNameCor),
-                                                 corr = TRUE, diffchar = 20, max.distance = 1)
-      ) # diffchar: maximum difference of characters nbr between input and output
-      # with Genus and species marche pas bien pcq décale genre et sp quand on unique())
-
-      setDT(TPLCor) # df to dt
-
-      # Take only corrected names. Columns: New.Genus, New.Species, Typo. Not Family because it is outdated.
-      TPLCor <- TPLCor[New.Genus != Genus | New.Species != Species,]
-      TPLCor <- TPLCor[, list(Taxonomic.status, Typo, Taxon, New.Genus, New.Species)]
-      TPLCor[, BotanicalCorrectionSource := "The Plant List"] # create the Source
-
-
-      # Join the corrected Genus and Species, by original 'ScientificNameCor'
-      Data <- merge(Data, TPLCor, by.x = "ScientificNameCor", by.y = "Taxon", all.x = TRUE)
-
-      # Update correction columns
-      Data[, GenusCor := ifelse(!is.na(New.Genus), New.Genus, GenusCor)]
-      Data[, SpeciesCor := ifelse(!is.na(New.Species), New.Species, SpeciesCor)]
-
-
-      # Comment:
-      ## if "Synonym" :
-      Data <- GenerateComment(Data,
-                              condition = Data$Taxonomic.status == "Synonym",
-                              comment = "'ScientificName' is a synonym of the accepted botanical name")
-      ## if Typo == TRUE :
-      Data <- GenerateComment(Data,
-                              condition = Data$Typo == TRUE,
-                              comment = "Spelling error in the 'ScientificName'")
-
-      # Remove columns that have become useless
-      Data[, c("Taxonomic.status", "Typo", "New.Genus", "New.Species") := NULL]
-
-
-      # Family & Scientific names match -------------------------------------------------------------------------------------
-      # Retrieve Family names by Genus
-      # (*BIOMASS::getTaxonomy*) with APG III family
-
-      FamilyData <-
-        setDT( # as data.table
-          BIOMASS::getTaxonomy(unique(Data$GenusCor), findOrder = FALSE)
-        )
-
-      setnames(FamilyData, "family", "FamilyCor") # rename columns
-
-
-      # Join Family table and the dataset
-      Data <- merge(Data, FamilyData, by.x = "GenusCor", by.y = "inputGenus",  all.x = TRUE, sort = FALSE)
-
-    } # end if "TPL"
+    # if(Source == "TPL"){
+    #
+    #   # Correct spelling error & standardise botanical names ----------------------------------------------------------------
+    #
+    #   # TPL correction with Taxonstand package
+    #   TPLCor <- suppressWarnings(Taxonstand::TPL(splist = unique(Data$ScientificNameCor),
+    #                                              corr = TRUE, diffchar = 20, max.distance = 1)
+    #   ) # diffchar: maximum difference of characters nbr between input and output
+    #   # with Genus and species marche pas bien pcq décale genre et sp quand on unique())
+    #
+    #   setDT(TPLCor) # df to dt
+    #
+    #   # Take only corrected names. Columns: New.Genus, New.Species, Typo. Not Family because it is outdated.
+    #   TPLCor <- TPLCor[New.Genus != Genus | New.Species != Species,]
+    #   TPLCor <- TPLCor[, list(Taxonomic.status, Typo, Taxon, New.Genus, New.Species)]
+    #   TPLCor[, BotanicalCorrectionSource := "The Plant List"] # create the Source
+    #
+    #
+    #   # Join the corrected Genus and Species, by original 'ScientificNameCor'
+    #   Data <- merge(Data, TPLCor, by.x = "ScientificNameCor", by.y = "Taxon", all.x = TRUE)
+    #
+    #   # Update correction columns
+    #   Data[, GenusCor := ifelse(!is.na(New.Genus), New.Genus, GenusCor)]
+    #   Data[, SpeciesCor := ifelse(!is.na(New.Species), New.Species, SpeciesCor)]
+    #
+    #
+    #   # Comment:
+    #   ## if "Synonym" :
+    #   Data <- GenerateComment(Data,
+    #                           condition = Data$Taxonomic.status == "Synonym",
+    #                           comment = "'ScientificName' is a synonym of the accepted botanical name")
+    #   ## if Typo == TRUE :
+    #   Data <- GenerateComment(Data,
+    #                           condition = Data$Typo == TRUE,
+    #                           comment = "Spelling error in the 'ScientificName'")
+    #
+    #   # Remove columns that have become useless
+    #   Data[, c("Taxonomic.status", "Typo", "New.Genus", "New.Species") := NULL]
+    #
+    #
+    #   # Family & Scientific names match -------------------------------------------------------------------------------------
+    #   # Retrieve Family names by Genus
+    #   # (*BIOMASS::getTaxonomy*) with APG III family
+    #
+    #   FamilyData <-
+    #     setDT( # as data.table
+    #       BIOMASS::getTaxonomy(unique(Data$GenusCor), findOrder = FALSE)
+    #     )
+    #
+    #   setnames(FamilyData, "family", "FamilyCor") # rename columns
+    #
+    #
+    #   # Join Family table and the dataset
+    #   Data <- merge(Data, FamilyData, by.x = "GenusCor", by.y = "inputGenus",  all.x = TRUE, sort = FALSE)
+    #
+    # } # end if "TPL"
 
     if(Source == "WFO"){
 
@@ -360,7 +349,7 @@ BotanicalCorrection <- function(
                             condition = !Data$Family %in% Data$FamilyCor,
                             comment = "The 'Family' name is incorrect")
 
-    if(Source == "TPL") FamCorSource <- "APG III family"
+    # if(Source == "TPL") FamCorSource <- "APG III family"
     if(Source == "WFO") FamCorSource <- "World Flora Online"
     Data[!is.na(FamilyCor), FamilyCorSource := FamCorSource] # create the Source
 
@@ -429,7 +418,7 @@ BotanicalCorrection <- function(
 
     if(!identical(CorresIDs, unique(CorresIDs))){ # check if it's the same length, same ids -> 1 asso/ID
 
-      duplicated_ID <- unique(CorresIDs[duplicated(CorresIDs)]) # identify the Idtree(s) having several P-SubP-TreeFieldNum combinations
+      duplicated_ID <- unique(CorresIDs[duplicated(CorresIDs)]) # identify the Idtree(s) having several bota combinations
 
       Data <- GenerateComment(Data,
                               condition =
