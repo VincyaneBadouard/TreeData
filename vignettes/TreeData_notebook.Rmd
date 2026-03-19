@@ -1,0 +1,249 @@
+---
+title: "Inventory QA/QC - Notebook"
+author: "Vincyane Badouard"
+date: "`r Sys.Date()`"
+output: html_notebook
+---
+```{r display_help function, echo = F, results = 'hide'}
+display_help <- function(subject, pkg = NULL) {
+  tc <- textConnection("s", "w", local = TRUE)
+  tools:::Rd2HTML(utils:::.getHelpFile(help(subject, (pkg))), out = tc)
+  knitr::asis_output(htmltools::htmlPreserve(s))
+}
+```
+
+# Install R packages
+```{r install pkgs}
+devtools::install_github("Alliance-for-Tropical-Forest-Science/DataHarmonization", build_vignettes = TRUE) # To format inventory data
+devtools::install_github("VincyaneBadouard/TreeData", build_vignettes = TRUE) # to detect and/or correct inventory data errors 
+install.packages(c("readr"))
+```
+
+# Load R packages
+```{r setup}
+library(TreeData)
+library(readr)
+```
+
+# Load your tree inventory data
+Detail: Dataset (data.frame or data.table)
+```{r, message=F}
+Data <- read_csv("C:/Users/badouard/Downloads/stem.csv")
+```
+
+# Load the shapefile of your plot
+Detail: plot polygon with a crs (sf)
+```{r}
+PlotPolygon <- st_read("C:/Users/badouard/Downloads/plot_poly.gpkg")
+```
+
+# Format inventory
+```{r}
+DataHarmonization::run_app()
+```
+
+# QA/QC
+# Check duplicated rows
+```{r}
+display_help("DetectDuplicatedRows")
+```
+
+```{r}
+# if there are duplicate rows, delete them
+Data <- DetectDuplicatedRows(Data)
+
+if(anyDuplicated(Data) != 0)
+  Data <- unique(Data)
+```
+
+# Check missing values
+```{r}
+display_help("DetectMissingValues")
+```
+```{r}
+Data <- DetectMissingValues(
+  Data,
+  Vars = c("Plot", "Subplot", "Year", "TreeFieldNum", "IdTree", "IdStem", "Diameter","POM", "HOM", "TreeHeight", "StemHeight", "XTreeUTM", "YTreeUTM", "Family", "Genus", "Species", "VernName"),
+  MeasVars = c("Diameter", "HOM", "TreeHeight", "StemHeight")
+)
+```
+
+```{r}
+# The detected errors
+unique(Data[Comment != "", Comment])
+
+Data[Comment != "", ]
+```
+
+# Check the unique association of the IdTree/IdStem with Plot-Subplot-TreeFieldNum, at the site scale
+```{r}
+display_help("DetectDiffTreeIDAssociation")
+```
+```{r}
+Data <- DetectDiffTreeIDAssociation(Data)
+```
+
+# Check duplicated IdTree/IdStem in a census
+```{r}
+display_help("DetectDuplicatedStemID")
+```
+```{r}
+Data <- DetectDuplicatedStemID(Data)
+```
+
+# Check the stem number coherence
+```{r}
+display_help("DetectStemNbrIncoherence")
+```
+```{r}
+Data <- DetectStemNbrIncoherence(Data)
+```
+
+# Check invariant coordinates per IdTree/IdStem
+```{r}
+display_help("DetectStemVariantCoord")
+```
+```{r}
+Data <- DetectStemVariantCoord(Data)
+```
+
+# Check for trees outside the subplot
+```{r}
+display_help("DetectTreesOut")
+```
+```{r}
+Data <- DetectTreesOut(Data, PlotPolygon)
+```
+
+# Detect botanical errors
+```{r}
+display_help("DetectBotanicalErrors")
+```
+```{r}
+Data <- DetectBotanicalErrors(Data)
+```
+
+# Corect/update botanical informations
+```{r}
+print("HERE USE BIOMASS PACKAGE")
+```
+
+
+# Detect multistem
+Detect multistem in trees inventory data from common coordinates and botanical name
+```{r}
+display_help("DetectMultistem")
+```
+```{r}
+Data <- DetectMultistem(Data)
+```
+
+
+# Correct the tree life status evolution over the censuses
+```{r}
+display_help("StatusCorrection")
+```
+```{r}
+Data <- StatusCorrection(
+  Data,
+  InvariantColumns = c("Site", "Genus_TreeDataCor", "Species_TreeDataCor",
+                       "Family_TreeDataCor", "ScientificName_TreeDataCor"),
+  DeathConfirmation = 2,
+  UseSize = FALSE,
+  AddRowsForForgottenCensuses = TRUE,
+  DetectOnly = FALSE,
+  RemoveRBeforeAlive = FALSE,
+  RemoveRAfterDeath = FALSE
+)
+```
+
+## Plot tree life status corrections
+```{r}
+display_help("LifeStatusCorrectionPlot")
+```
+```{r}
+LifeStatusCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = TRUE)
+```
+
+# Transform the tree diameter measured at a given height into the diameter corresponding to the default measurement height (HOM), using an allometry
+```{r}
+display_help("TaperCorrection")
+```
+```{r}
+Data <- TaperCorrection(
+  Data,
+  DefaultHOM = 1.3,
+  TaperParameter = function(DAB, HOM) 0.156 - 0.023 * log(DAB) - 0.021 * log(HOM),
+  TaperFormula = function(DAB, HOM, TaperParameter, DefaultHOM) DAB/(exp(-TaperParameter * (HOM - DefaultHOM))),
+  DetectOnly = FALSE
+)
+```
+
+# Diameter correction
+```{r}
+display_help("DiameterCorrection")
+```
+```{r}
+Data <- DiameterCorrection(
+  Data,
+  KeepMeas = c("MaxHOM", "MaxDate"),
+  DefaultHOM = 1.3,
+  MaxDBH = 500,
+  PositiveGrowthThreshold = 5,
+  NegativeGrowthThreshold = -2,
+  Pioneers = NULL,
+  PioneersGrowthThreshold = 7.5,
+  WhatToCorrect = c("POM change", "punctual", "shift"),
+  CorrectionType = c("individual", "phylogenetic hierarchical"),
+  DBHRange = 10,
+  MinIndividualNbr = 5,
+  OtherCrit = NULL,
+  Digits = 1L,
+  DBHCorForDeadTrees = TRUE,
+  coef = 0.9,
+  DetectOnly = FALSE)
+```
+
+# Plot diameter corrections
+```{r}
+display_help("DiameterCorrectionPlot")
+```
+```{r}
+DiameterCorrectionPlot(Data,
+  OnlyCorrected = TRUE,
+  CorCol = "Diameter_TreeDataCor",
+  SeveralWindows = TRUE)
+```
+
+# RecruitmentCorrection
+```{r}
+display_help("RecruitmentCorrection")
+```
+```{r}
+Data <- RecruitmentCorrection(
+  Data,
+  KeepMeas = c("MaxHOM", "MaxDate"),
+  MinDBH = 10,
+  PositiveGrowthThreshold = 5,
+  InvariantColumns = c("Site", "Genus_TreeDataCor", "Species_TreeDataCor",
+    "Family_TreeDataCor", "ScientificName_TreeDataCor"),
+  DetectOnly = FALSE)
+```
+
+# Plot corrected recruits
+TODO
+```{r}
+display_help("RecruitmentCorrectionPlot")
+```
+```{r}
+RecruitmentCorrectionPlot(Data,
+  OnlyCorrected = TRUE,
+  CorCol = "Diameter_TreeDataCor",
+  SeveralWindows = TRUE)
+```
+
+# Reverse inventory formating
+```{r}
+Data <- ReversedRequiredFormat(Data)
+```
+

@@ -50,5 +50,11 @@ utils::globalVariables(c("Site", "Plot", "Subplot", "PlotArea", "SubplotArea", "
                          "BotanicalCorrectionSource", "FamilyCorSource"
 ))
 
+#' @importFrom dplyr bind_rows
+#' @importFrom ggplot2 geom_sf
+#' @importFrom ggplot2 scale_color_manual
+#' @importFrom ggplot2 theme_classic
+#' @importFrom ggplot2 labs
+
 ## usethis namespace: end
 NULL

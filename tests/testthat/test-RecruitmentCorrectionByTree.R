@@ -3,6 +3,7 @@ test_that("RecruitmentCorrectionByTreeByTree", {
   # Import data
   library(data.table)
   TestData <- data.table(Site = "Imaginary forest",
+                         Plot = 1,
                          IdTree = "a",
                          Year = seq(2000,2008, by = 2), # 2 years/census
                          Diameter_TreeDataCor  = as.numeric(c(13:17)), # 1cm/census(0.5 cm/year) (if integer, it doesn't match with the linear model outputs)
@@ -20,7 +21,7 @@ test_that("RecruitmentCorrectionByTreeByTree", {
   NoDBHCorData <- copy(TestData)
   setnames(NoDBHCorData, "Diameter_TreeDataCor", "Diameter") # only Diameter
   OneDBHVal <- copy(TestData)
-  OneDBHVal[, ("Diameter_TreeDataCor") := 13]
+  OneDBHVal[, ("Diameter_TreeDataCor") := 50]
 
   # Check the function argument
   expect_error(RecruitmentCorrectionByTree(MatrixData),
@@ -106,16 +107,16 @@ test_that("RecruitmentCorrectionByTreeByTree", {
   expect_true(all(cresc >= PositiveGrowthThreshold | cresc_abs < NegativeGrowthThreshold))
 
 
-  # If only 1 DBH value : keep this value for the forgotten recruits
-  Rslt <- RecruitmentCorrectionByTree(OneDBHVal ,
+  # If only 1 DBH value : do not add rows
+  Rslt <- RecruitmentCorrectionByTree(OneDBHVal,
                                       MinDBH = MinDBH,
                                       InvariantColumns = "Site",
                                       PlotCensuses = PlotCensuses)
 
   ForgRecruits <- unique(Rslt[CorrectedRecruit %in% TRUE, Diameter_TreeDataCor])
-  MesurVal <- unique(OneDBHVal[CorrectedRecruit %in% FALSE, Diameter_TreeDataCor])
 
-  expect_true(MesurVal==ForgRecruits)
+  expect_true(is.null(nrow(ForgRecruits)))
+  expect_true(Rslt[, Comment][1] != "")
 
 })
 

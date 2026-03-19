@@ -41,9 +41,6 @@ DetectStemNbrIncoherence <- function(
   stems <- Data[!is.na(Data$IdTree) & Data$Stem.nb!=1,]$IdTree # stem id >1
   stem1 <- Data[Data$IdTree %in% stems & Data$Stem.nb==1,]$IdTree
 
-  Data %>%
-    filter(IdTree %in% stems[!stems %in% stem1])
-
   Data[IdTree %in% stems[!stems %in% stem1],
        Comment := paste0(Comment, paste0("Trees without stem 1"), sep ="/")]
 

@@ -104,7 +104,7 @@ IdTree/IdStem/Diameter/POM/HOM/Family/Genus/Species/VernName
 - Check of the **unique association of the IdTree with plot, subplot**
 **and TreeFieldNum** (at the site scale)
 - Check **duplicated IdTree/IdStem** in a census (at the site scale)
-- Check for trees **outside the subplot** (not implemented yet)
+- Check for trees **outside the plot**
 - Check **invariant coordinates per IdTree/IdStem**
 - Check **fix Plot and Subplot number** (not implemented yet)
 

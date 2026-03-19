@@ -2,8 +2,6 @@
 #'
 #' @param Data Dataset (data.frame or data.table)
 #'
-#' @details
-#'
 #' @return The input dataset (data.table) without the duplicated rows.
 #'
 #' @export

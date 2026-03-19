@@ -44,8 +44,6 @@ FullErrorProcessing(
 
 \item{Source}{(character) To correct and standardise, you can choose between:
 \itemize{
-\item "TPL": \emph{The Plant List} (http://www.theplantlist.org/) (faster but based
-on the 2013 taxonomy)
 \item "WFO": \emph{World Flora Online} (http://www.worldfloraonline.org/) (long time
 but based on the 2022 taxonomy)
 \item NULL: if only error detection (DetectOnly = TRUE)

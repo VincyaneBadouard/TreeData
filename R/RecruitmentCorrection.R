@@ -56,6 +56,7 @@
 #' IdCorr <- Rslt[CorrectedRecruit == TRUE, IdTree]
 #' TreesCorr <- Rslt[IdTree %in% IdCorr]
 #'
+#' # Plot the diameters of the trees with corrected recruits:
 #' library(ggplot2)
 #' ggplot(TreesCorr) +
 #' aes(x = Year, y = Diameter_TreeDataCor) +
@@ -142,12 +143,11 @@ RecruitmentCorrection <- function(
   # data.frame to data.table
   setDT(Data)
 
-  # Remove duplicated measurements per Year because different POM or Date -----------------------------------
+  # Remove duplicated measurements per Year because different POM or Date (reput after) -----------------------------------
   CompleteData <- copy(Data)
   Data <- UniqueMeasurement(Data, KeepMeas = KeepMeas, ID = ID)
 
   DuplicatedRows <- CompleteData[!Data, on = .NATURAL] # rows removed
-
 
 
   if(!"Comment" %in% names(Data)) Data[, Comment := ""]
@@ -163,10 +163,10 @@ RecruitmentCorrection <- function(
   # IDs vector --------------------------------------------------------------------------------------------------------
   Ids <- as.vector(na.omit(unique(Data[!is.na(Year), get(ID)]))) # Tree Ids
 
-  # Dataset with the rows without IDS ----------------------------------------------------------------------------------
+  # Dataset with the rows without IDS (reput after) ----------------------------------------------------------------------------------
   DataIDNa <- Data[is.na(get(ID))]
 
-  # Dataset with the rows without Year --------------------------------------------------------------------------------
+  # Dataset with the rows without Year (reput after) --------------------------------------------------------------------------------
   DataYearNa <- Data[is.na(Year)]
 
 
@@ -178,7 +178,7 @@ RecruitmentCorrection <- function(
     PositiveGrowthThreshold = PositiveGrowthThreshold,
     InvariantColumns = InvariantColumns,
     PlotCensuses = as.vector(na.omit( # rm NA
-      unique(Data[Plot %in% unique(Data[get(ID) %in% i, Plot]),  Year]) # the censuses for the plot in which the tree is
+      unique(Data[Plot %in% unique(Data[get(ID) %in% i, Plot]), Year]) # the censuses for the plot in which the tree is
     )),
     DetectOnly = DetectOnly
   )
@@ -309,7 +309,7 @@ RecruitmentCorrectionByTree <- function(
   if(DetectOnly %in% FALSE){
     # Diameter_TreeDataCor column exists
     if(!"Diameter_TreeDataCor" %in% names(DataTree))
-      warning("The 'Diameter_TreeDataCor' (corrected Diameter) column does't exist in the dataset.
+      warning("The 'Diameter_TreeDataCor' (corrected Diameter) column doesn't exist in the dataset.
          We advise to first correct the diameter measurements before correcting the recruitment")
   }
 
@@ -360,7 +360,7 @@ RecruitmentCorrectionByTree <- function(
   # Initialisation
   cresc <- rep(0, length(DBHCor) - 1) # (cresc[1] corresponds to the 2nd DBH)
 
-  if (sum(!is.na(DBHCor)) > 1) { # if there is at least 1 measurement
+  if(sum(!is.na(DBHCor)) > 1) { # if there is at least 1 measurement
 
     cresc[which(!is.na(DBHCor))[-1] - 1] <- # 8 cresc for 9 dbh values ([-1]), shift all indices by 1 to the left (-1)
       diff(DBHCor[!is.na(DBHCor)]) / diff(Year[!is.na(DBHCor)]) # DBH difference between pairwise censuses / time difference between pairwise censuses
@@ -381,7 +381,7 @@ RecruitmentCorrectionByTree <- function(
     FirstDBH <- DataTree[!is.na(Diameter_TreeDataCor), Diameter_TreeDataCor][1] # 1st measured DBH
 
     # If only 1 DBH value but too high according to the PositiveGrowthThreshold and the time after le previous census:
-    if(length(is.na(DataTree$Diameter_TreeDataCor)) == 1 &
+    if(length(unique(is.na(DataTree$Diameter_TreeDataCor))) == 1 &
        DataTree$Diameter_TreeDataCor[1] > (MinDBH + (RecruitYear - PrevCens) * PositiveGrowthThreshold)){
 
       DataTree <- GenerateComment(DataTree,
@@ -468,7 +468,7 @@ RecruitmentCorrectionByTree <- function(
             # Estimate the recruits DBHCor with linear extrapolation
             RecruitsDBH <- coef[1] + DataTree[Year < RecruitYear, Year]*coef[2] # y = b + ax. Min entre ces DBH inférés et le 1er DBH
 
-            # If estimated DBHCors are higher than the first measured DBHCors, (comment c possible ?)
+            # If estimated DBHCors are higher than the first measured DBHCors, (how it's possible?)
             # these are replaced by first measured DBHCors.
             for(y in 1: length(RecruitsDBH)){
               RecruitsDBH[y] <- min(RecruitsDBH[y], FirstDBH)
@@ -476,7 +476,7 @@ RecruitmentCorrectionByTree <- function(
             DataTree[Year < RecruitYear, ("Diameter_TreeDataCor") := RecruitsDBH]
           }
 
-          # UselessRows: added trees under the MinDBH
+          # UselessRows: added trees under the MinDBH --------------------------
           UselessRows <- ((DataTree[, Diameter_TreeDataCor] < MinDBH) & (DataTree[, Year] %in% MissingCens))
 
           if(any(UselessRows)){

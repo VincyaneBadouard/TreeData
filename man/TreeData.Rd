@@ -2,8 +2,8 @@
 % Please edit documentation in R/TreeData-package.R
 \docType{package}
 \name{TreeData}
-\alias{TreeData}
 \alias{TreeData-package}
+\alias{TreeData}
 \title{TreeData-package}
 \description{
 Forest Inventories Harmonization & Correction

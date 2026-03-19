@@ -40,8 +40,14 @@ DetectMissingValues <- function(
   #### Arguments check ####
 
   # Data
-  if (!inherits(Data, c("data.table", "data.frame")))
+  if(!inherits(Data, c("data.table", "data.frame")))
     stop("Data must be a data.frame or data.table")
+
+  if(!inherits(Vars, "character"))
+    stop("Vars must be a character")
+
+  if(!inherits(MeasVars, "character"))
+    stop("MeasVars must be a character")
 
   #### Function ####
 

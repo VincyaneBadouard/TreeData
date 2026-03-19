@@ -73,6 +73,7 @@ Rslt <- RecruitmentCorrection(TestData,
 IdCorr <- Rslt[CorrectedRecruit == TRUE, IdTree]
 TreesCorr <- Rslt[IdTree \%in\% IdCorr]
 
+# Plot the diameters of the trees with corrected recruits:
 library(ggplot2)
 ggplot(TreesCorr) +
 aes(x = Year, y = Diameter_TreeDataCor) +
