@@ -1,7 +1,7 @@
 #' Full error processing
 #'
 #' @inheritParams GeneralErrorsDetection
-#' @inheritParams BotanicalCorrection
+#' @inheritParams DetectBotanicalErrors
 #' @inheritParams StatusCorrection
 #' @inheritParams TaperCorrection
 #' @inheritParams DiameterCorrection
@@ -9,14 +9,14 @@
 #'
 #' @details Detect errors or detect and correct errors:
 #' - Check general errors (*GeneralErrorsDetection*)
-#' - Check botanical identification (*BotanicalCorrection*)
+#' - Check botanical identification (*DetectBotanicalErrors*)
 #' - Check the life status evolution of the trees/stems (*StatusCorrection*)
 #' - Apply a taper allometry on diameters measured at heights different from the
 #'    default(*TaperCorrection*)
 #' - Check diameter evolution of the trees (*DiameterCorrection*)
 #' - Check tree/stem recruitment (*RecruitmentCorrection*)
 #'
-#' @seealso \link{GeneralErrorsDetection}, \link{BotanicalCorrection},
+#' @seealso \link{GeneralErrorsDetection}, \link{DetectBotanicalErrors},
 #'   \link{StatusCorrection}, \link{TaperCorrection}, \link{DiameterCorrection},
 #'   \link{RecruitmentCorrection}
 #'
@@ -204,10 +204,7 @@ FullErrorProcessing <- function(
 
   #### Botanical informations ####
 
-  Data <- BotanicalCorrection(Data = Data,
-                              Source = Source,
-                              WFOData = WFOData,
-                              DetectOnly = DetectOnly)
+  Data <- DetectBotanicalErrors(Data = Data)
 
   #### Life status ####
 

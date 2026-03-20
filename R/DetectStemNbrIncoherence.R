@@ -25,10 +25,10 @@ DetectStemNbrIncoherence <- function(
   if (!inherits(Data, c("data.table", "data.frame")))
     stop("Data must be a data.frame or data.table")
 
-  # IdTree and Stem.nb? ---------------------------------------------------------------------------------------
+  # IdTree and StemNb? ---------------------------------------------------------------------------------------
 
-  if(!any(c("IdTree", "Stem.nb") %in% names(Data)) | (all(is.na(Data$Stem.nb)) &  all(is.na(Data$IdTree))) )
-    stop("The 'IdTree' or 'Stem.nb' column is missing in your dataset")
+  if(!all(c("IdTree", "StemNb") %in% names(Data)) | (all(is.na(Data$StemNb)) &  all(is.na(Data$IdTree))) )
+    stop("The 'IdTree' or 'StemNb' column is missing in your dataset")
   # ---------------------------------------------------------------------------------------------------------
 
   #### Function ####
@@ -38,11 +38,11 @@ DetectStemNbrIncoherence <- function(
 
   # Check the stem nbr coherence -----------------------------------------------
 
-  stems <- Data[!is.na(Data$IdTree) & Data$Stem.nb!=1,]$IdTree # stem id >1
-  stem1 <- Data[Data$IdTree %in% stems & Data$Stem.nb==1,]$IdTree
+  stems <- Data[!is.na(Data$IdTree) & Data$StemNb!=1,]$IdTree # stem id >1
+  stem1 <- Data[Data$IdTree %in% stems & Data$StemNb==1,]$IdTree
 
   Data[IdTree %in% stems[!stems %in% stem1],
-       Comment := paste0(Comment, paste0("Trees without stem 1"), sep ="/")]
+       Comment := paste0(Comment, paste0("Trees without stem no.1"), sep ="/")]
 
   return(Data)
 }

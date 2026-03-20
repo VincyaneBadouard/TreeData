@@ -1,4 +1,4 @@
-test_that("BotanicalCorrection", {
+test_that("DetectBotanicalErrors", {
 
   # options(warn = 2) # trace warning
 
@@ -69,26 +69,26 @@ test_that("BotanicalCorrection", {
   MatrixData <- as.matrix(Data)
 
   # Check the function argument -------------------------------------------------------------------------------------------
-  expect_error(BotanicalCorrection(MatrixData),
+  expect_error(DetectBotanicalErrors(MatrixData),
                regexp = "Data must be a data.frame or data.table")
 
-  expect_error(BotanicalCorrection(Data, Source = TRUE),
+  expect_error(DetectBotanicalErrors(Data, Source = TRUE),
                regexp = "NULL")
 
-  expect_error(BotanicalCorrection(Data, Source = "TRUE"),
+  expect_error(DetectBotanicalErrors(Data, Source = "TRUE"),
                regexp = "should be one of")
 
-  expect_error(BotanicalCorrection(Data, Source = "WFO", WFOData = NULL),
+  expect_error(DetectBotanicalErrors(Data, Source = "WFO", WFOData = NULL),
                regexp = "You must provide the 'WFOData' argument")
 
-  expect_error(BotanicalCorrection(Data, Source = NULL, DetectOnly = "TRUE"),
+  expect_error(DetectBotanicalErrors(Data, Source = NULL, DetectOnly = "TRUE"),
                regexp = "The 'DetectOnly' argument must be a logical")
 
   # Check the function work -----------------------------------------------------------------------------------------------
 
   ## Detect Only: no correction, only comments ----------------------------------------------------------------------------
-  # RsltTPL <- BotanicalCorrection(Data, Source = "TPL", DetectOnly = TRUE)
-  RsltWFO <- BotanicalCorrection(Data, Source = "WFO", WFOData = WFOdataSubset, DetectOnly = TRUE)
+  # RsltTPL <- DetectBotanicalErrors(Data, Source = "TPL", DetectOnly = TRUE)
+  RsltWFO <- DetectBotanicalErrors(Data, Source = "WFO", WFOData = WFOdataSubset, DetectOnly = TRUE)
 
   Rslt <- list(RsltWFO) # RsltTPL,
 
@@ -120,8 +120,8 @@ test_that("BotanicalCorrection", {
   }
 
   # Correction
-  # RsltTPL <- BotanicalCorrection(Data, Source = "TPL")
-  # RsltWFO <- BotanicalCorrection(Data, Source = "WFO", WFOData = WFOdataSubset)
+  # RsltTPL <- DetectBotanicalErrors(Data, Source = "TPL")
+  # RsltWFO <- DetectBotanicalErrors(Data, Source = "WFO", WFOData = WFOdataSubset)
   #
   # Rslt <- list(RsltWFO) # RsltTPL,
   #
@@ -157,7 +157,7 @@ test_that("BotanicalCorrection", {
   #   expect_true(any(grepl("subsp", Rslt[[r]]$Subspecies)))
   #
   #   # Source columns ? (A FAIRE)
-  #   # BotanicalCorrectionSource == "The Plant List” or "World Flora Online"
+  #   # DetectBotanicalErrorsSource == "The Plant List” or "World Flora Online"
   #   # FamilyCorSource == "APG III family” if TPL, "World Flora Online”
   #
   #   # No adding rows

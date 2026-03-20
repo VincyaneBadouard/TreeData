@@ -23,6 +23,8 @@ install.packages(c("readr"))
 ```{r setup}
 library(TreeData)
 library(readr)
+library(data.table)
+library(ggplot2)
 ```
 
 # Load your tree inventory data
@@ -43,17 +45,21 @@ DataHarmonization::run_app()
 ```
 
 # QA/QC
-# Check duplicated rows
+**Load the example dataset stored in the package**
 ```{r}
-display_help("DetectDuplicatedRows")
+data("TestData")
+Data <- TestData
 ```
 
+# Check duplicated rows
 ```{r}
-# if there are duplicate rows, delete them
-Data <- DetectDuplicatedRows(Data)
+# Are there duplicates rows?
+anyDuplicated(Data) != 0
+```
 
-if(anyDuplicated(Data) != 0)
-  Data <- unique(Data)
+## Delete duplicated rows
+```{r}
+Data <- unique(Data)
 ```
 
 # Check missing values
@@ -68,11 +74,14 @@ Data <- DetectMissingValues(
 )
 ```
 
+## Display rows with missing values
 ```{r}
 # The detected errors
 unique(Data[Comment != "", Comment])
 
-Data[Comment != "", ]
+Data[grepl("Missing value", Comment), ]
+
+Data[grepl("cannot be 0", Comment), ]
 ```
 
 # Check the unique association of the IdTree/IdStem with Plot-Subplot-TreeFieldNum, at the site scale
@@ -99,6 +108,11 @@ display_help("DetectStemNbrIncoherence")
 Data <- DetectStemNbrIncoherence(Data)
 ```
 
+## Display trees without stem no.1
+```{r}
+Data[grepl("Trees without stem no.1", Comment), ]
+```
+
 # Check invariant coordinates per IdTree/IdStem
 ```{r}
 display_help("DetectStemVariantCoord")
@@ -107,12 +121,25 @@ display_help("DetectStemVariantCoord")
 Data <- DetectStemVariantCoord(Data)
 ```
 
+## Display trees with different coordinates
+```{r}
+Data[grepl("Different coordinates", Comment), ]
+```
+
 # Check for trees outside the subplot
 ```{r}
 display_help("DetectTreesOut")
 ```
 ```{r}
-Data <- DetectTreesOut(Data, PlotPolygon)
+Data <- DetectTreesOut(Data, PlotPolygon) # it plots the trees in and out the plot also
+```
+
+## Display rows with dectected errors
+```{r}
+# The detected errors
+unique(Data[Comment != "", Comment])
+
+Data[Comment != "", ]
 ```
 
 # Detect botanical errors
@@ -123,9 +150,16 @@ display_help("DetectBotanicalErrors")
 Data <- DetectBotanicalErrors(Data)
 ```
 
+## Display rows with botanical errors
+```{r}
+Data[grepl("aceae", Comment), ]
+Data[grepl("Special characters", Comment), ]
+Data[grepl("Different botanical informations", Comment), ]
+```
+
 # Corect/update botanical informations
 ```{r}
-print("HERE USE BIOMASS PACKAGE")
+print("TODO: HERE USE BIOMASS PACKAGE")
 ```
 
 
@@ -137,7 +171,10 @@ display_help("DetectMultistem")
 ```{r}
 Data <- DetectMultistem(Data)
 ```
-
+## Display potential multistem trees
+```{r}
+Data[grepl("Potential multistem", Comment), .(IdTree, IdStem, ScientificName)]
+```
 
 # Correct the tree life status evolution over the censuses
 ```{r}
@@ -155,6 +192,13 @@ Data <- StatusCorrection(
   RemoveRBeforeAlive = FALSE,
   RemoveRAfterDeath = FALSE
 )
+```
+## Display tree life status correction
+```{r}
+corrID <- unique(Data[LifeStatus_TreeDataCor != LifeStatus,]$IdStem)
+
+Data[IdStem %in% corrID, 
+     .(IdStem, Year, LifeStatus, LifeStatus_TreeDataCor, Comment)]
 ```
 
 ## Plot tree life status corrections

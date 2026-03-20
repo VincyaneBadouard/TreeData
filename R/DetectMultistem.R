@@ -27,7 +27,11 @@ DetectMultistem <- function(Data){
 
   if(!"Comment" %in% names(Data)) Data[, Comment := ""]
 
-  DuplicatedID <- Data[duplicated(Data[, list(Coord, ScientificName, Year)]), list(Coord, ScientificName, Year)]
+  DuplicatedID <- Data[duplicated(Data[, list(Coord, ScientificName, Year)]),
+                       list(Coord, ScientificName, Year)]
+
+# if any NA in the columns, remove the row (missing coord, ScientificName or Year)
+  DuplicatedID <- DuplicatedID[DuplicatedID[, Reduce(`&`, lapply(.SD, function(x) !any(grepl("NA", x)))), .SDcols = names(DuplicatedID)]]
 
   if(nrow(DuplicatedID) > 0){
 

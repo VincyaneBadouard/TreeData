@@ -40,19 +40,7 @@ FullErrorProcessing(
 \item{Data}{Dataset (data.frame or data.table)}
 
 \item{DetectOnly}{TRUE: Only detect errors, FALSE: detect and correct errors
-(Default: FALSE) (logical)}
-
-\item{Source}{(character) To correct and standardise, you can choose between:
-\itemize{
-\item "WFO": \emph{World Flora Online} (http://www.worldfloraonline.org/) (long time
-but based on the 2022 taxonomy)
-\item NULL: if only error detection (DetectOnly = TRUE)
-}}
-
-\item{WFOData}{To be filled in if the argument \code{Source} = "WFO". Data set
-with the static copy of the \emph{World Flora Online} (WFO) Taxonomic Backbone
-data (from http://www.worldfloraonline.org/downloadData.) (data.frame or
-data.table)}
+(logical)}
 
 \item{InvariantColumns}{Vector with the names of the columns that are
 supposed to have always the same value for each measurement of the same
@@ -183,7 +171,7 @@ Full error processing
 Detect errors or detect and correct errors:
 \itemize{
 \item Check general errors (\emph{GeneralErrorsDetection})
-\item Check botanical identification (\emph{BotanicalCorrection})
+\item Check botanical identification (\emph{DetectBotanicalErrors})
 \item Check the life status evolution of the trees/stems (\emph{StatusCorrection})
 \item Apply a taper allometry on diameters measured at heights different from the
 default(\emph{TaperCorrection})
@@ -204,7 +192,7 @@ Rslt_Panama <- FullErrorProcessing(PanamaFormated, Source = "WFO", WFOData = WFO
 
 }
 \seealso{
-\link{GeneralErrorsDetection}, \link{BotanicalCorrection},
+\link{GeneralErrorsDetection}, \link{DetectBotanicalErrors},
 \link{StatusCorrection}, \link{TaperCorrection}, \link{DiameterCorrection},
 \link{RecruitmentCorrection}
 }
