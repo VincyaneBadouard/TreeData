@@ -1,7 +1,11 @@
 test_that("GeneralErrorsDetection", {
 
-  # Import data
+  # Load packages
+  library(testthat)
   library(data.table)
+  library(sf)
+
+  # Import data
   data(TestData)
 
   # Create test data
@@ -10,14 +14,20 @@ test_that("GeneralErrorsDetection", {
   NoDBHData <- TestData[, !c("Diameter")]
   NoPlotData <- TestData[, !c("Plot")]
 
+  # Create a plot polygon
+  PlotPolygon <- st_as_sf(st_sfc(st_polygon(list(
+  rbind(c(1, 5), c(2, 2), c(4, 1), c(4, 4), c(1, 5))))))
+  st_crs(PlotPolygon) <- 4326
+
+
   # Check the function argument
-  expect_error(GeneralErrorsDetection(MatrixData),
+  expect_error(GeneralErrorsDetection(MatrixData, PlotPolygon),
                regexp = "Data must be a data.frame or data.table")
 
 
   # Check the function work
   TestData[, IdStem := NULL]
-  Rslt <- suppressWarnings(GeneralErrorsDetection(TestData))
+  Rslt <- suppressWarnings(GeneralErrorsDetection(TestData, PlotPolygon))
 
   ## Remove *duplicated rows*
   expect_true(anyDuplicated(TestData)!= 0 & anyDuplicated(Rslt) == 0)
@@ -54,39 +64,6 @@ test_that("GeneralErrorsDetection", {
 
     }
   }
-
-  ## Check *duplicated TreeFieldNum* in plot-subplot association in a census (at the site scale)
-
-  # duplicated_num <- num <- vector("character")
-  # # For each site
-  # for (s in unique(na.omit(Rslt$Site))) {
-  #   # For each census
-  #   for (y in unique(na.omit(Rslt$Year))) {
-  #     # For each plot
-  #     for (p in unique(na.omit(Rslt$Plot))) {
-  #       # For each Subplot in this plot
-  #       for (c in unique(na.omit(Rslt[Rslt$Plot==p, Subplot]))) {
-  #
-  #         num <- Rslt[Rslt$Site == s & Rslt$Year == y
-  #                     & Rslt$Plot == p & Rslt$Subplot == c,]$TreeFieldNum # all the TreeFieldNum for each Plot-Subplot combination
-  #
-  #         # if there are several TreeFieldNum per Plot-Subplot combination
-  #         if(anyDuplicated(num) != 0){
-  #           duplicated_num <- unique(num[duplicated(num)])
-  #
-  #           DuplFieldNbr <- (Rslt[,Site] == s & Rslt[,Year] == y
-  #                            & Rslt[,Plot] == p & Rslt[,Subplot] == c
-  #                            & Rslt[,TreeFieldNum] %in% duplicated_num)
-  #
-  #           expect_true(all(Rslt$Comment[DuplFieldNbr] != "")) # Rslt[DuplFieldNbr]
-  #
-  #           num <- vector("character")
-  #
-  #         } else {num <- vector("character")}
-  #       } # end subplot loop
-  #     } # end plot loop
-  #   } # end year loop
-  # } # end site loop
 
 
   ## Check of the *unique association of the idTree with plot, TreeFieldNum subplot* (at the site scale)

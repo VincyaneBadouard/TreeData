@@ -45,6 +45,42 @@ DataHarmonization::run_app()
 ```
 
 # QA/QC
+All the detection/correction functions of the package:
+- Check missing values:
+DetectMissingValues()
+
+- Check of the unique association of the IdTree/IdStem with Plot-Subplot-TreeFieldNum, at the site scale:
+DetectDiffTreeIDAssociation()
+
+- Check duplicated IdTree/IdStem in a census:
+DetectDuplicatedStemID()
+
+- Check the stem number coherence:
+DetectStemNbrIncoherence()
+
+- Check invariant coordinates per IdTree/IdStem:
+DetectStemVariantCoord()
+
+- Check for trees outside the subplot: 
+DetectTreesOutBotanicalCorrection() 
+
+- Check/correct the tree life status evolution over the censuses: 
+StatusCorrection()  
+
+- Taper correction for buttressed trees: 
+TaperCorrection()  
+
+- Check/correct the tree diameter values:
+DiameterCorrection()  
+
+- Check/correct missing recruited trees:
+RecruitmentCorrection()  
+
+Visualisation functions:
+LifeStatusCorrectionPlot()
+DiameterCorrectionPlot()
+RecruitmentCorrectionPlot() (TODO)
+
 **Load the example dataset stored in the package**
 ```{r}
 data("TestData")
@@ -176,7 +212,7 @@ Data <- DetectMultistem(Data)
 Data[grepl("Potential multistem", Comment), .(IdTree, IdStem, ScientificName)]
 ```
 
-# Correct the tree life status evolution over the censuses
+# Check/correct the tree life status evolution over the censuses
 ```{r}
 display_help("StatusCorrection")
 ```
@@ -205,11 +241,19 @@ Data[IdStem %in% corrID,
 ```{r}
 display_help("LifeStatusCorrectionPlot")
 ```
+
 ```{r}
+# To display the plots in the Rstudio session:
 LifeStatusCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = TRUE)
+
+# To dowload as pdf:
+# pdf("LifeStatusCorrectionPlot_TestData.pdf", width = 25, height = 10)
+# LifeStatusCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = FALSE)
+# dev.off()
 ```
 
-# Transform the tree diameter measured at a given height into the diameter corresponding to the default measurement height (HOM), using an allometry
+# Taper correction for buttressed trees
+Transform the tree diameter measured at a given height into the diameter corresponding to the default measurement height (HOM), using an allometry
 ```{r}
 display_help("TaperCorrection")
 ```
@@ -253,13 +297,19 @@ Data <- DiameterCorrection(
 display_help("DiameterCorrectionPlot")
 ```
 ```{r}
+# To display the plots in the Rstudio session:
 DiameterCorrectionPlot(Data,
-  OnlyCorrected = TRUE,
-  CorCol = "Diameter_TreeDataCor",
-  SeveralWindows = TRUE)
+                       OnlyCorrected = TRUE,
+                       CorCol = "Diameter_TreeDataCor",
+                       SeveralWindows = TRUE)
+
+# To dowload as pdf:
+# pdf("DiameterCorrectionPlots_TestData.pdf", width = 25, height = 10)
+# DiameterCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = FALSE)
+# dev.off()
 ```
 
-# RecruitmentCorrection
+# Check/correct missing recruited trees
 ```{r}
 display_help("RecruitmentCorrection")
 ```
@@ -270,7 +320,7 @@ Data <- RecruitmentCorrection(
   MinDBH = 10,
   PositiveGrowthThreshold = 5,
   InvariantColumns = c("Site", "Genus_TreeDataCor", "Species_TreeDataCor",
-    "Family_TreeDataCor", "ScientificName_TreeDataCor"),
+                       "Family_TreeDataCor", "ScientificName_TreeDataCor"),
   DetectOnly = FALSE)
 ```
 
@@ -279,11 +329,30 @@ TODO
 ```{r}
 display_help("RecruitmentCorrectionPlot")
 ```
+
 ```{r}
+# To display the plots in the Rstudio session:
 RecruitmentCorrectionPlot(Data,
-  OnlyCorrected = TRUE,
-  CorCol = "Diameter_TreeDataCor",
-  SeveralWindows = TRUE)
+                          OnlyCorrected = TRUE,
+                          CorCol = "Diameter_TreeDataCor",
+                          SeveralWindows = TRUE)
+# To dowload as pdf:
+# pdf("RecruitmentCorrectionPlot_TestData.pdf", width = 25, height = 10)
+# RecruitmentCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = FALSE)
+# dev.off()
+```
+
+# Plot initial and corrected diameter distribution of the stand.
+```{r}
+DistributionPlot(Data,
+                 InitialCol = "Diameter",
+                 CorCol = "Diameter_TreeDataCor")
+```
+
+# Plot initial and corrected diameter distribution of the stand.
+```{r}
+DistributionPlot(Data,
+                 InitialCol = "TreeHeight")
 ```
 
 # Reverse inventory formating

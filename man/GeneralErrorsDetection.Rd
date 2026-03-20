@@ -6,15 +6,17 @@
 \usage{
 GeneralErrorsDetection(
   Data,
+  PlotPolygon,
   Vars = c("Plot", "Subplot", "Year", "TreeFieldNum", "IdTree", "IdStem", "Diameter",
     "POM", "HOM", "TreeHeight", "StemHeight", "XTreeUTM", "YTreeUTM", "Family", "Genus",
     "Species", "VernName"),
-  MeasVars = c("Diameter", "HOM", "TreeHeight", "StemHeight"),
-  PlotPolygon
+  MeasVars = c("Diameter", "HOM", "TreeHeight", "StemHeight")
 )
 }
 \arguments{
 \item{Data}{Dataset (data.frame or data.table)}
+
+\item{PlotPolygon}{Plot polygon with a crs (sf)}
 
 \item{Vars}{Variables to check for missing data (character)
 (Default = c("Plot", "Subplot", "Year", "TreeFieldNum", "IdTree",
@@ -23,8 +25,6 @@ GeneralErrorsDetection(
 
 \item{MeasVars}{Measurement variables to check for missing data or 0
 (character) (Default = c("Diameter", "HOM", "TreeHeight", "StemHeight"))}
-
-\item{PlotPolygon}{Plot polygon with a crs (sf)}
 }
 \value{
 The input dataset (data.table) with a new \emph{Comment} column with error
@@ -54,7 +54,12 @@ IdTree/IdStem/Diameter/POM/HOM/Family/Genus/Species/VernName
 \examples{
 library(data.table)
 data("TestData")
+library(sf)
 
-Rslt <- GeneralErrorsDetection(TestData)
+PlotPolygon <- st_as_sf(st_sfc(st_polygon(list(
+rbind(c(1, 5), c(2, 2), c(4, 1), c(4, 4), c(1, 5))))))
+st_crs(PlotPolygon) <- 4326
+
+Rslt <- GeneralErrorsDetection(TestData, PlotPolygon)
 
 }

@@ -70,8 +70,11 @@ Rslt <- RecruitmentCorrection(TestData,
                                                    "Species",
                                                    "Family",
                                                    "ScientificName"))
-IdCorr <- Rslt[CorrectedRecruit == TRUE, IdTree]
-TreesCorr <- Rslt[IdTree \%in\% IdCorr]
+
+RecruitmentCorrectionPlot(Data=Rslt, OnlyCorrected = TRUE)
+
+IdCorr <- Rslt[CorrectedRecruit == TRUE, IdStem]
+TreesCorr <- Rslt[IdStem \%in\% IdCorr]
 
 # Plot the diameters of the trees with corrected recruits:
 library(ggplot2)
@@ -80,6 +83,6 @@ aes(x = Year, y = Diameter_TreeDataCor) +
   geom_line(size = 0.5, colour = "#112446") +
   geom_point(shape = "circle", size = 1.5, mapping = aes(color = CorrectedRecruit)) +
   theme_minimal() +
-  facet_wrap(vars(IdTree), scales = "free")
+  facet_wrap(vars(IdStem), scales = "free")
 
 }

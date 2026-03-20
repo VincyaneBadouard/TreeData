@@ -5,7 +5,7 @@
 #'   - `IdStem` (character)
 #'   - `Year` (numeric)
 #'   - `Diameter` (numeric)
-#'   - `DBHCor` (numeric)
+#'   - `Diameter_TreeDataCor` (numeric)
 #'   - `HOM` (Height Of Measurement) (numeric)
 #'   - `HOMCor` (Corrected Height Of Measurement) (numeric)
 #'
@@ -76,7 +76,7 @@ DiameterCorrectionPlot <- function(
   }else{ POMcorv <- "HOM_TreeDataCor"}
 
   # Columns --------------------------------------------------------------------------------------------------------------
-  # IdStem, Year, Diameter, DBHCor, HOM, HOMCor
+  # IdStem, Year, Diameter, Diameter_TreeDataCor, HOM, HOMCor
   if(!all(c("Year", "Diameter", CorCol, POMv, POMcorv) %in% names(Data)))
     stop(paste0("'Year', 'Diameter', '",CorCol,"', '",POMv,"', ",POMcorv,"' should be columns of Data"))
 
@@ -88,7 +88,7 @@ DiameterCorrectionPlot <- function(
 
   if(OnlyCorrected == TRUE){
     # Only corrected stems ----------------------------------------------------------------------------------------------
-    IDCor <- Data[Diameter != get(CorCol), get(ID)] #  corrected stems
+    IDCor <- unique(Data[Diameter != get(CorCol), get(ID)]) #  corrected stems
 
     DataCor <- Data[get(ID) %in% IDCor] #  corrected stems
 
