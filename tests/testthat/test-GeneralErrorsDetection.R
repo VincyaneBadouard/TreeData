@@ -2,25 +2,22 @@ test_that("GeneralErrorsDetection", {
 
   # Load packages
   library(testthat)
+  library(TreeData)
   library(data.table)
   library(sf)
 
   # Import data
   data(TestData)
+  data(PlotPolygon)
 
-  # Create test data
+  # Create test data -----------------------------------------------------------
   MatrixData <- as.matrix(TestData)
   MatrixData <- as.matrix(TestData)
   NoDBHData <- TestData[, !c("Diameter")]
   NoPlotData <- TestData[, !c("Plot")]
 
-  # Create a plot polygon
-  PlotPolygon <- st_as_sf(st_sfc(st_polygon(list(
-  rbind(c(1, 5), c(2, 2), c(4, 1), c(4, 4), c(1, 5))))))
-  st_crs(PlotPolygon) <- 4326
 
-
-  # Check the function argument
+  # Check the function argument ------------------------------------------------
   expect_error(GeneralErrorsDetection(MatrixData, PlotPolygon),
                regexp = "Data must be a data.frame or data.table")
 
@@ -29,10 +26,10 @@ test_that("GeneralErrorsDetection", {
   TestData[, IdStem := NULL]
   Rslt <- suppressWarnings(GeneralErrorsDetection(TestData, PlotPolygon))
 
-  ## Remove *duplicated rows*
+  ## Remove *duplicated rows* --------------------------------------------------
   expect_true(anyDuplicated(TestData)!= 0 & anyDuplicated(Rslt) == 0)
 
-  ## Check *missing value* in
+  ## Check *missing value* in --------------------------------------------------
   # (X-YTreeUTM/PlotArea/Plot/Subplot/Year/TreeFieldNum/IdTree/Diameter/POM/HOM/Family/Genus/Species/VernName)
   Vars <- c("Plot", "Subplot", "Year", "TreeFieldNum", "IdTree", "IdStem",
             "Diameter", "POM", "HOM", "TreeHeight", "StemHeight",
@@ -51,7 +48,7 @@ test_that("GeneralErrorsDetection", {
   } # Vars loop
 
 
-  ## Check *missing value* (NA/0) in the measurement variables
+  ## Check *missing value* (NA/0) in the measurement variables -----------------
   Vars <- c("Diameter", "HOM", "TreeHeight", "StemHeight")
   # v = 1
   for (v in 1:length(Vars)) {
@@ -66,7 +63,8 @@ test_that("GeneralErrorsDetection", {
   }
 
 
-  ## Check of the *unique association of the idTree with plot, TreeFieldNum subplot* (at the site scale)
+  ## Check of the *unique association of the idTree ----------------------------
+  # with plot, TreeFieldNum subplot* (at the site scale)
 
   duplicated_ID <- CorresIDs <- vector("character")
   # For each site
@@ -90,7 +88,7 @@ test_that("GeneralErrorsDetection", {
     }
   } # end site loop
 
-  ## Check *duplicated IdTree* in a census (at the site scale)
+  ## Check *duplicated IdTree* in a census (at the site scale) -----------------
 
   DuplicatedID <- Rslt[duplicated(Rslt[, list(IdTree, Year)]), list(IdTree, Year)]
 
@@ -109,7 +107,7 @@ test_that("GeneralErrorsDetection", {
   }
 
 
-  ## Check *invariant coordinates per IdTree*
+  ## Check *invariant coordinates per IdTree* ----------------------------------
   duplicated_ID <- CorresIDs <- vector("character")
 
   # For each site
@@ -130,9 +128,9 @@ test_that("GeneralErrorsDetection", {
     }
   } # end site loop
 
-  ## Check for trees *outside the subplot* A FAIRE
+  ## Check for trees *outside the subplot* TODO
 
-  ## Check *fix Plot and Subplot number* A FAIRE
+  ## Check *fix Plot and Subplot number* TODO
 
 })
 

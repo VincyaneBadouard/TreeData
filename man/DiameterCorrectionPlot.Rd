@@ -8,6 +8,7 @@ DiameterCorrectionPlot(
   Data,
   OnlyCorrected = FALSE,
   CorCol = "Diameter_TreeDataCor",
+  Rmarkdown = FALSE,
   SeveralWindows = TRUE
 )
 }
@@ -28,6 +29,8 @@ The dataset must contain the columns:
 
 \item{CorCol}{Corrected column name (character)}
 
+\item{Rmarkdown}{TRUE to plot in a Rmarkdown file, FALSE if not.}
+
 \item{SeveralWindows}{TRUE: return each page in a new window (better
 visualisation in Rstudio), FALSE: return each page in the same window
 (needed to save all the pages) (logical)}
@@ -42,8 +45,10 @@ Plot diameter correction result
 \examples{
 
 \dontrun{
+DiameterCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = T)
+
 pdf("DiameterCorrectionPlots_TestData.pdf", width = 25, height = 10)
-DiameterCorrectionPlot(Rslt, OnlyCorrected = TRUE, SeveralWindows = FALSE)
+DiameterCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = F)
 dev.off()
 }
 

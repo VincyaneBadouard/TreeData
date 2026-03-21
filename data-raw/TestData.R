@@ -14,6 +14,11 @@ setDT(Data) # with "set" "<-" is not necessary
 
 nError <- 1 # number of error to add for each case
 
+#### Create StemNb column ####
+Data[, StemNb := 1]
+
+#### Create a tree without StemNb 1 ####
+Data[IdTree=='100658', `:=`(IdStem = '100658_2_auto', StemNb = 2)]
 
 #### Tree size = 0 ####
 modif <- Data[, .I[sample(.N, nError)]] # .I = seq_len(nrow(Data)), .N = nrows in the group -> sample 2 rows number in Data
@@ -25,6 +30,15 @@ modif <- Data[, .I[sample(.N, nError)]] # .I = seq_len(nrow(Data)), .N = nrows i
 Data[modif, XTreeUTM := NA]
 Data[modif, YTreeUTM := NA]
 # Data[modif] # to check
+
+#### Create fake coordinates in/out the plot polygon ####
+ID <- unique(Data$IdTree)
+
+Data[IdTree== ID[1], `:=`(XTreeUTM = 1.5, YTreeUTM = 1.5)]
+Data[IdTree==ID[2], `:=`(XTreeUTM = 2.5, YTreeUTM = 2)]
+Data[IdTree==ID[3], `:=`(XTreeUTM = 3, YTreeUTM = 2.5)]
+Data[IdTree==ID[4], `:=`(XTreeUTM = 3, YTreeUTM = 3.5)]
+
 
 #### Other missing values ####
 Vars <- c("PlotArea", "Plot", "Subplot", "Year", "TreeFieldNum", "IdTree",
@@ -87,6 +101,14 @@ Data[IdTree %in% idModif, IdTree := duplicatedID] # we duplicate the IdTree on t
 Data[Year == 2020 & IdTree == duplicatedID] # to check
 
 #### Unseen tree but alive tree after ####
+
+#### Different HOM ####
+Data[POM==0, HOM:=1.3]
+Data[POM==1, HOM:=1.4]
+Data[POM==2, HOM:=1.5]
+Data[POM==4, HOM:=2.0]
+Data[POM==6, HOM:=2.5]
+Data[POM==7, HOM:=3.0]
 
 #### Abnormal growth ####
 #### Abnormal recruit ####

@@ -10,6 +10,8 @@
 #' @param OnlyCorrected TRUE: plot only corrected trees, FALSE: plot all trees
 #'   (logical)
 #'
+#' @param Rmarkdown TRUE to plot in a Rmarkdown file, FALSE if not.
+#'
 #' @param SeveralWindows TRUE: return each page in a new window (better
 #'   visualisation in Rstudio), FALSE: return each page in the same window
 #'   (needed to save all the pages) (logical)
@@ -38,6 +40,7 @@ LifeStatusCorrectionPlot <- function(
   # CorCol = "LifeStatus_TreeDataCor",
   # InitialCol = "LifeStatus",
   # FileName = "LifeStatusCorrectionPlots.pdf"
+  Rmarkdown = FALSE,
   SeveralWindows = TRUE
 ){
 
@@ -97,11 +100,13 @@ LifeStatusCorrectionPlot <- function(
   # Plot --------------------------------------------------------------------------------------------------------------
   # pdf(FileName, width = 25, height = 10)
 
+  plots <- list()
+
   if(SeveralWindows == TRUE)
   dev.new()
 
   for(p in 1:(ceiling(length(unique(IDCor))/9))){
-    print(ggplot(DataCor) +
+    plots[[p]] <- ggplot(DataCor) +
       aes(x = Year) +
 
       # Initial
@@ -132,16 +137,15 @@ LifeStatusCorrectionPlot <- function(
 
       ggforce::facet_wrap_paginate(vars(get(ID)), scales = "free", ncol = min(n,3), nrow = i, page = p)
 
-    )
+    # )
 
+    if(Rmarkdown == FALSE) print(plots[[p]])
     if(SeveralWindows == TRUE & p < ceiling(length(unique(IDCor))/9))
       dev.new()
-
-
   }
+
+  if(Rmarkdown) print(plots)
+
   # dev.off()
-
-
-  # return(Pl)
 
 }

@@ -38,13 +38,8 @@
 #' @examples
 #' library(data.table)
 #' data("TestData")
-#' library(sf)
-#'
-#' PlotPolygon <- st_as_sf(st_sfc(st_polygon(list(
-#' rbind(c(1, 5), c(2, 2), c(4, 1), c(4, 4), c(1, 5))))))
-#' st_crs(PlotPolygon) <- 4326
-#'
-#' Rslt <- GeneralErrorsDetection(TestData, PlotPolygon)
+#' data("PlotPolygon")
+#' Rslt <- GeneralErrorsDetection(Data=TestData, PlotPolygon)
 #'
 GeneralErrorsDetection <- function(
     Data,
@@ -81,8 +76,6 @@ GeneralErrorsDetection <- function(
 
   if(!inherits(MeasVars, "character"))
     stop("MeasVars must be a character")
-
-
 
   # PlotPolygon
   if (!inherits(PlotPolygon, "sf"))

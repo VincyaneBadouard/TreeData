@@ -4,7 +4,12 @@
 \alias{LifeStatusCorrectionPlot}
 \title{Plot life status correction result}
 \usage{
-LifeStatusCorrectionPlot(Data, OnlyCorrected = FALSE, SeveralWindows = TRUE)
+LifeStatusCorrectionPlot(
+  Data,
+  OnlyCorrected = FALSE,
+  Rmarkdown = FALSE,
+  SeveralWindows = TRUE
+)
 }
 \arguments{
 \item{Data}{Dataset (data.frame or data.table)
@@ -18,6 +23,8 @@ The dataset must contain the columns:
 
 \item{OnlyCorrected}{TRUE: plot only corrected trees, FALSE: plot all trees
 (logical)}
+
+\item{Rmarkdown}{TRUE to plot in a Rmarkdown file, FALSE if not.}
 
 \item{SeveralWindows}{TRUE: return each page in a new window (better
 visualisation in Rstudio), FALSE: return each page in the same window

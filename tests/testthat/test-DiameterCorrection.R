@@ -1,10 +1,13 @@
 test_that("DiameterCorrection", {
 
   # Import data ---------------------------------------------------------------------------------------------------------------------
+  library(testthat)
+  library(TreeData)
   library(data.table)
   data(TestData)
 
   # Remove other errors types (non-unique idTree, missing Year)
+  TestData <- TestData[, HOM := NULL]
   TestData <- TestData[!IdTree %in% c("100898", "101686")]
 
   # Create test data ----------------------------------------------------------------------------------------------------------------
@@ -13,7 +16,7 @@ test_that("DiameterCorrection", {
   HOMData <- copy(TestData[IdTree == "100658"])
   HOMData[, HOM := 1.3] # data with HOM
   POMData <- copy(TestData[IdTree == "100658"])
-  POMData[, POM := as.factor(1)] # data with POM
+  POMData[, POM := as.factor(1)] # data with POM, without HOM
 
 
   # Check the function argument -----------------------------------------------------------------------------------------------------

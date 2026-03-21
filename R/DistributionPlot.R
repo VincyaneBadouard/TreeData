@@ -12,7 +12,8 @@
 #' @export
 #'
 #' @examples
-#' DistributionPlot(Data)
+#' DistributionPlot(Data, InitialCol = "Diameter",
+#'                        CorCol = "Diameter_TreeDataCor")
 
 DistributionPlot <- function(
     Data,

@@ -8,6 +8,7 @@ RecruitmentCorrectionPlot(
   Data,
   OnlyCorrected = FALSE,
   CorCol = "Diameter_TreeDataCor",
+  Rmarkdown = FALSE,
   SeveralWindows = TRUE
 )
 }
@@ -23,7 +24,9 @@ The dataset must contain the columns:
 \item{OnlyCorrected}{TRUE: plot only corrected stems, FALSE: plot all stems
 (logical)}
 
-\item{CorCol}{Diameter coorrected column name (character)}
+\item{CorCol}{Diameter corrected column name (character)}
+
+\item{Rmarkdown}{TRUE to plot in a Rmarkdown file, FALSE if not.}
 
 \item{SeveralWindows}{TRUE: return each page in a new window (better
 visualisation in Rstudio), FALSE: return each page in the same window

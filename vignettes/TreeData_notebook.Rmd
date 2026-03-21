@@ -30,13 +30,13 @@ library(ggplot2)
 # Load your tree inventory data
 Detail: Dataset (data.frame or data.table)
 ```{r, message=F}
-Data <- read_csv("C:/Users/badouard/Downloads/stem.csv")
+Data <- read_csv("")
 ```
 
 # Load the shapefile of your plot
 Detail: plot polygon with a crs (sf)
 ```{r}
-PlotPolygon <- st_read("C:/Users/badouard/Downloads/plot_poly.gpkg")
+PlotPolygon <- st_read("")
 ```
 
 # Format inventory
@@ -61,7 +61,7 @@ DetectStemNbrIncoherence()
 - Check invariant coordinates per IdTree/IdStem:
 DetectStemVariantCoord()
 
-- Check for trees outside the subplot: 
+- Check for trees outside the plot: 
 DetectTreesOutBotanicalCorrection() 
 
 - Check/correct the tree life status evolution over the censuses: 
@@ -85,6 +85,8 @@ RecruitmentCorrectionPlot() (TODO)
 ```{r}
 data("TestData")
 Data <- TestData
+
+data("PlotPolygon")
 ```
 
 # Check duplicated rows
@@ -244,9 +246,12 @@ display_help("LifeStatusCorrectionPlot")
 
 ```{r}
 # To display the plots in the Rstudio session:
-LifeStatusCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = TRUE)
+LifeStatusCorrectionPlot(Data,
+                         OnlyCorrected = TRUE,
+                         Rmarkdown = TRUE,
+                         SeveralWindows = TRUE)
 
-# To dowload as pdf:
+# To download as pdf:
 # pdf("LifeStatusCorrectionPlot_TestData.pdf", width = 25, height = 10)
 # LifeStatusCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = FALSE)
 # dev.off()
@@ -257,6 +262,7 @@ Transform the tree diameter measured at a given height into the diameter corresp
 ```{r}
 display_help("TaperCorrection")
 ```
+
 ```{r}
 Data <- TaperCorrection(
   Data,
@@ -282,11 +288,11 @@ Data <- DiameterCorrection(
   Pioneers = NULL,
   PioneersGrowthThreshold = 7.5,
   WhatToCorrect = c("POM change", "punctual", "shift"),
-  CorrectionType = c("individual", "phylogenetic hierarchical"),
+  CorrectionType = c("linear", "individual"), # ,"phylogenetic hierarchical"
   DBHRange = 10,
   MinIndividualNbr = 5,
   OtherCrit = NULL,
-  Digits = 1L,
+  Digits = 2L,
   DBHCorForDeadTrees = TRUE,
   coef = 0.9,
   DetectOnly = FALSE)
@@ -301,13 +307,15 @@ display_help("DiameterCorrectionPlot")
 DiameterCorrectionPlot(Data,
                        OnlyCorrected = TRUE,
                        CorCol = "Diameter_TreeDataCor",
+                       Rmarkdown = TRUE,
                        SeveralWindows = TRUE)
 
-# To dowload as pdf:
+# To download as pdf:
 # pdf("DiameterCorrectionPlots_TestData.pdf", width = 25, height = 10)
 # DiameterCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = FALSE)
 # dev.off()
 ```
+
 
 # Check/correct missing recruited trees
 ```{r}
@@ -318,6 +326,7 @@ Data <- RecruitmentCorrection(
   Data,
   KeepMeas = c("MaxHOM", "MaxDate"),
   MinDBH = 10,
+  MinDBHLimit = 5,
   PositiveGrowthThreshold = 5,
   InvariantColumns = c("Site", "Genus_TreeDataCor", "Species_TreeDataCor",
                        "Family_TreeDataCor", "ScientificName_TreeDataCor"),
@@ -325,7 +334,6 @@ Data <- RecruitmentCorrection(
 ```
 
 # Plot corrected recruits
-TODO
 ```{r}
 display_help("RecruitmentCorrectionPlot")
 ```
@@ -335,24 +343,30 @@ display_help("RecruitmentCorrectionPlot")
 RecruitmentCorrectionPlot(Data,
                           OnlyCorrected = TRUE,
                           CorCol = "Diameter_TreeDataCor",
+                          Rmarkdown = TRUE,
                           SeveralWindows = TRUE)
-# To dowload as pdf:
+# To download as pdf:
 # pdf("RecruitmentCorrectionPlot_TestData.pdf", width = 25, height = 10)
 # RecruitmentCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = FALSE)
 # dev.off()
 ```
 
-# Plot initial and corrected diameter distribution of the stand.
+# Plot initial and corrected diameter distribution of the stand
 ```{r}
 DistributionPlot(Data,
                  InitialCol = "Diameter",
                  CorCol = "Diameter_TreeDataCor")
 ```
 
-# Plot initial and corrected diameter distribution of the stand.
+# Plot initial and corrected diameter distribution of the stand
 ```{r}
 DistributionPlot(Data,
                  InitialCol = "TreeHeight")
+```
+
+# Plot the height - diameter relationship of the stand
+```{r}
+HeightVSDiameterPlot(Data, "TreeHeight", "Diameter_TreeDataCor")
 ```
 
 # Reverse inventory formating

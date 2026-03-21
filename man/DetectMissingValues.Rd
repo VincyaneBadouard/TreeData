@@ -43,6 +43,6 @@ IdTree/IdStem/Diameter/POM/HOM/Family/Genus/Species/VernName
 library(data.table)
 data("TestData")
 
-Rslt <- DetectMissingValues(TestData)
+Rslt <- DetectMissingValues(Data=TestData)
 
 }

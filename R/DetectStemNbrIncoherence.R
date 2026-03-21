@@ -27,8 +27,14 @@ DetectStemNbrIncoherence <- function(
 
   # IdTree and StemNb? ---------------------------------------------------------------------------------------
 
-  if(!all(c("IdTree", "StemNb") %in% names(Data)) | (all(is.na(Data$StemNb)) &  all(is.na(Data$IdTree))) )
-    stop("The 'IdTree' or 'StemNb' column is missing in your dataset")
+  if(!"IdTree" %in% names(Data) | (all(is.na(Data$IdTree))))
+    stop("The 'IdTree' column is missing in your dataset")
+
+  if(!"StemNb" %in% names(Data) | (all(is.na(Data$StemNb))))
+    stop("The 'StemNb' column is missing in your dataset")
+
+  if (!inherits(Data$StemNb, 'numeric'))
+    stop("StemNb must be a numeric")
   # ---------------------------------------------------------------------------------------------------------
 
   #### Function ####

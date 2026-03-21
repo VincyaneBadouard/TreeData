@@ -7,6 +7,7 @@
 RecruitmentCorrectionByTree(
   DataTree,
   MinDBH = 10,
+  MinDBHLimit = 5,
   PositiveGrowthThreshold = 5,
   InvariantColumns = c("Site", "GenusCor", "SpeciesCor", "FamilyCor",
     "ScientificNameCor"),
@@ -22,6 +23,10 @@ will take the column "Diameter"}
 
 \item{MinDBH}{Minimum diameter of trees inventoried according to your
 protocol (in cm) (numeric, 1 value)}
+
+\item{MinDBHLimit}{How many centimeters must the first DBH measurement be
+above the 'MinDBH' to consider missing recruits? (in cm) (numeric, 1 value)
+(Default = 5 cm above the 'MinDBH')}
 
 \item{PositiveGrowthThreshold}{A tree widening by more than x
 cm/year is considered abnormal (numeric, 1 value)}

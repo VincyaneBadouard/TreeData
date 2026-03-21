@@ -12,6 +12,8 @@
 #' @param OnlyCorrected TRUE: plot only corrected stems, FALSE: plot all stems
 #'   (logical)
 #'
+#' @param Rmarkdown TRUE to plot in a Rmarkdown file, FALSE if not.
+#'
 #' @param SeveralWindows TRUE: return each page in a new window (better
 #'   visualisation in Rstudio), FALSE: return each page in the same window
 #'   (needed to save all the pages) (logical)
@@ -32,8 +34,10 @@
 #' @examples
 #'
 #'\dontrun{
+#' DiameterCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = T)
+#'
 #' pdf("DiameterCorrectionPlots_TestData.pdf", width = 25, height = 10)
-#' DiameterCorrectionPlot(Rslt, OnlyCorrected = TRUE, SeveralWindows = FALSE)
+#' DiameterCorrectionPlot(Data, OnlyCorrected = TRUE, SeveralWindows = F)
 #' dev.off()
 #'}
 #'
@@ -42,6 +46,7 @@ DiameterCorrectionPlot <- function(
     OnlyCorrected = FALSE,
     CorCol = "Diameter_TreeDataCor",
     # InitialCol = "Diameter"
+    Rmarkdown = FALSE,
     SeveralWindows = TRUE
 ){
 
@@ -105,11 +110,14 @@ DiameterCorrectionPlot <- function(
 
   # Plot --------------------------------------------------------------------------------------------------------------
 
+  plots <- list()
+
   if(SeveralWindows == TRUE)
     dev.new()
 
   for(p in seq_len(ceiling(length(unique(IDCor))/9))){
-    print(ggplot(DataCor) +
+    plots[[p]] <- ggplot(DataCor) +
+    # print(ggplot(DataCor) +
             aes(x = Year) +
 
             # Duplicated measurement
@@ -166,11 +174,14 @@ DiameterCorrectionPlot <- function(
             ggforce::facet_wrap_paginate(vars(get(ID), ScientificName),
                                          scales = "free",
                                          ncol = min(n,3), nrow = i, page = p)
-    )
+    # )
 
+    if(Rmarkdown == FALSE) print(plots[[p]])
     if(SeveralWindows == TRUE & p < ceiling(length(unique(IDCor))/9))
       dev.new()
   }
+
+  if(Rmarkdown) print(plots)
 
   # return(Pl)
 

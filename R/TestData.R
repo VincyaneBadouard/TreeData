@@ -23,6 +23,8 @@
 #'   \item{TreeFieldNum}{Tree unique identifiers within the subplot (matching
 #'    the tag number in the field) (character)}
 #'   \item{IdTree}{Unique tree identifier from the database (character)}
+#'   \item{IdStem}{Unique stem identifier from the database (character)}
+#'   \item{StemNb}{Stem numero (numeric)}
 #'   \item{Protocole}{Protocole name (character)}
 #'   \item{XTreePlot}{Euclidean position of the tree relative to
 #'   the Southwestern corner of the subplot, in m (numeric)}

@@ -27,7 +27,7 @@
 #' library(data.table)
 #' data("TestData")
 #'
-#' Rslt <- DetectMissingValues(TestData)
+#' Rslt <- DetectMissingValues(Data=TestData)
 #'
 DetectMissingValues <- function(
   Data,
@@ -63,20 +63,16 @@ DetectMissingValues <- function(
     #         "Diameter", "POM", "HOM", "TreeHeight", "StemHeight",
     #         "XTreeUTM", "YTreeUTM", "Family", "Genus", "Species", "VernName")
 
-  for (v in 1:length(Vars)) {
+  valid_vars <- Vars[Vars %in% names(Data)] # only existing columns
+  valid_vars <- valid_vars[!sapply(valid_vars, function(col) all(is.na(Data[[col]])))] # and not completely empty
 
-    if(Vars[v] %in% names(Data)){ # If the column exists
-      if(!all(is.na(Data[,get(Vars[v])]))){ # if the column is not completely empty
-
-        Data <- GenerateComment(Data,
-                                condition = is.na(Data[,get(Vars[v])]),
-                                comment = paste0("Missing value in ", Vars[v]))
-
-        # warning(paste0("Missing value in ", Vars[v]))
-
-      } # not empty column
-    } # column exists
-  } # Vars loop
+  for (col in valid_vars) {
+    Data <- GenerateComment(
+      Data,
+      condition = is.na(Data[[col]]),
+      comment = paste0("Missing value in ", col)
+    )
+  }
 
   # Data[grepl("Missing value", Comment)] # to check
 
@@ -85,15 +81,15 @@ DetectMissingValues <- function(
 
   # MeasVars <- c("Diameter", "HOM", "TreeHeight", "StemHeight")
 
-  for (v in 1:length(MeasVars)) {
-    if(MeasVars[v] %in% names(Data)){ # If the column exists
+  valid_vars <- MeasVars[MeasVars %in% names(Data)] # only existing columns
+  valid_vars <- valid_vars[!sapply(valid_vars, function(col) all(is.na(Data[[col]])))] # and not completely empty
 
-      Data <- GenerateComment(Data,
-                              condition = Data[,get(MeasVars[v])] == 0,
-                              comment = paste0(MeasVars[v]," cannot be 0"))
-
-      # warning(paste0(MeasVars[v]," cannot be 0"))
-    }
+  for (col in valid_vars) {
+    Data <- GenerateComment(
+      Data,
+      condition = Data[,get(col) == 0],
+      comment = paste0(col," cannot be 0")
+    )
   }
 
   # Data[grepl("cannot be 0", Comment)] # to check

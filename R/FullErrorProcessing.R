@@ -200,7 +200,7 @@ FullErrorProcessing <- function(
        but you do not have the necessary 'POM' or HOM' column in your dataset or they are empty")
 
   #### General errors detection ####
-  Data <- GeneralErrorsDetection(Data)
+  Data <- GeneralErrorsDetection(Data, PlotPolygon)
 
   #### Botanical informations ####
 

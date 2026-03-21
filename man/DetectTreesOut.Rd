@@ -23,15 +23,9 @@ Check for trees \strong{outside the plot}
 }
 \examples{
 library(data.table)
-library(sf)
+data("TestData")
+data("PlotPolygon")
 
-PlotPolygon <- st_as_sf(st_sfc(st_polygon(list(
-rbind(c(1, 5), c(2, 2), c(4, 1), c(4, 4), c(1, 5))))))
-st_crs(PlotPolygon) <- 4326
+Rslt <- DetectTreesOut(Data=TestData, PlotPolygon)
 
-Data <- data.frame(IdTree = c('A', 'B', 'C', 'D'),
-XTreeUTM = c(1.5, 2.5, 3, 3),
-YTreeUTM = c(1.5, 2, 2.5, 3.5)
-)
-Rslt <- DetectTreesOut(Data, PlotPolygon)
 }
